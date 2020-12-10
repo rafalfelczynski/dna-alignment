@@ -131,3 +131,7 @@ dmypy.json
 
 *.fasta
 *.FASTA
+.idea/sqldialects.xml
+.idea/vcs.xml
+.idea/*.xml
+*.txt

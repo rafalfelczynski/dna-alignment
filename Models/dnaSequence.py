@@ -1,8 +1,8 @@
-from sequence import _Sequence
+from sequence import Sequence
 import copy
 
 
-class DNASequence(_Sequence):
+class DNASequence(Sequence):
 
     def __init__(self, identifier, sequence):
         super().__init__(identifier, sequence)

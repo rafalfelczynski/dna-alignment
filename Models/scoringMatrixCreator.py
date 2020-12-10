@@ -1,6 +1,6 @@
 import numpy as np
 from scoring import Scoring
-from sequence import _Sequence
+from sequence import Sequence
 from scoringMatrix import ScoringMatrix
 
 
@@ -10,7 +10,7 @@ class ScoringMatrixCreator:
         self._scoring = scoring
         pass
 
-    def create(self, seq1: _Sequence, seq2: _Sequence):
+    def create(self, seq1: Sequence, seq2: Sequence):
         rows, columns = len(seq1.sequence) + 2, len(seq2.sequence) + 2
         matrix = np.zeros(shape=(rows, columns))
         for i in range(0, 2):

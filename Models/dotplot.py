@@ -1,9 +1,9 @@
-from sequence import _Sequence
+from sequence import Sequence
 
 
 class DotplotData:
 
-    def __init__(self, seq1: _Sequence, seq2: _Sequence, matrix=None):
+    def __init__(self, seq1: Sequence, seq2: Sequence, matrix=None):
         self.seq1 = seq1
         self.seq2 = seq2
         self.dotplot = matrix

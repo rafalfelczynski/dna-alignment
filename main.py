@@ -20,6 +20,7 @@ from pointsParser import parseScoring
 import dotplotStorage
 
 from controller import *
+from seqTableCreator import *
 
 
 cnt = 0
@@ -87,6 +88,8 @@ def main():
 
     print(scoringMatrix)
     print(scoringMatrix.fetchAligned())
+    print(SequencesTableCreator.TABLE_NAME())
+    print(", ".join(["ala", "ma", "kota"]))
 
     return sys.exit(app.exec_())
 
