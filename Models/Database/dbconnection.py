@@ -10,9 +10,11 @@ class DBException(Exception):
 class DBConnection(IDBConnection):
 
     __CONNECTION_NAME = "conn1"
+    DB_NAME = "alignment_app.db"
 
     def __init__(self):
-        self.__connection: QSqlDatabase = QSqlDatabase.addDatabase("SQLITE3", DBConnection.__CONNECTION_NAME)
+        self.__connection: QSqlDatabase = QSqlDatabase.addDatabase("QSQLITE", DBConnection.__CONNECTION_NAME)
+        self.__connection.setDatabaseName(self.DB_NAME)
 
     def connect(self) -> bool:
         if not self.__isOpen():
@@ -31,10 +33,16 @@ class DBConnection(IDBConnection):
     def executeQuery(self, query: QSqlQuery):
         if self.connect():
             succ = query.exec_()
-            self.__connection.close()
+            #self.__connection.close()
             return succ
         else:
             raise DBException("Couldn't connect to database")
+
+    def lastError(self):
+        return self.__connection.lastError()
+
+    def close(self):
+        self.__connection.close()
 
     def __isOpen(self):
         return self.__connection.isOpen() and self.__connection.isValid()

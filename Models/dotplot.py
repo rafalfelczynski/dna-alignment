@@ -9,12 +9,11 @@ class DotplotData:
         self.dotplot = matrix
 
 
-class __Dotplot:
+class Dotplot:
     __INVALID_SEQUENCE_ERROR_MSG = "Seq1 or Seq2 is invalid DNASequence"
 
     def __init__(self, data: DotplotData):
         self._data = data
-        self._validator = None
 
     def data(self):
         return self._data

@@ -1,9 +1,9 @@
-from dotplot import __Dotplot
+from dotplot import Dotplot
 import numpy as np
 from dotplot import DotplotData
 
 
-class DNADotplot(__Dotplot):
+class DNADotplot(Dotplot):
 
     __INVALID_SEQUENCE_ERROR_MSG = "Seq1 or Seq2 is invalid DNASequence"
 

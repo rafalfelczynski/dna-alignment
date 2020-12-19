@@ -12,4 +12,10 @@ class IDBConnection:
     def executeQuery(self, query: QSqlQuery) -> bool:
         pass
 
+    def lastError(self) -> str:
+        pass
+
+    def close(self) -> None:
+        pass
+
 

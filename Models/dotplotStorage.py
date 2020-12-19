@@ -1,7 +1,8 @@
 import numpy as np
 from dnaDotplot import DNADotplot
 from dnaSequence import DNASequence
-from dotplot import __Dotplot, DotplotData
+from dotplot import Dotplot, DotplotData
+from PySide2.QtCore import QRegExp
 
 
 def store(filePath: str, dotplot: DotplotData):
@@ -10,7 +11,8 @@ def store(filePath: str, dotplot: DotplotData):
         dotplotFile.write(dotplot.seq1.sequence+"\n")
         dotplotFile.write(dotplot.seq2.identifier+"\n")
         dotplotFile.write(dotplot.seq2.sequence+"\n")
-        np.savetxt(dotplotFile, dotplot.dotplot, fmt="%c", encoding="utf-8", delimiter="")
+        dotplotFile.write(str(dotplot.dotplot))
+        #np.savetxt(dotplotFile, dotplot.dotplot, fmt="%c", encoding="utf-8", delimiter="")
     pass
 
 
@@ -23,9 +25,17 @@ def __load(filePath: str):
         rows = len(seq1sequence)+1
         columns = len(seq2sequence)+1
         matrix = np.empty(shape=(rows, columns), dtype=str)
+        regex = QRegExp("('.')")
         for i in range(0, rows):
-            line = list(dotplotFile.readline()[0:-1])
-            matrix[i] = line
+            line = dotplotFile.readline()[0:-1].replace("[", "").replace("]", "")
+            pos: int = 0
+            chars = []
+            while pos >= 0:
+                pos = regex.indexIn(line, pos)
+                if pos >= 0:
+                    chars.append(regex.cap(1))
+                    pos += regex.matchedLength()
+            matrix[i] = chars
         return seq1id, seq1sequence, seq2id, seq2sequence, matrix
 
 

@@ -21,6 +21,9 @@ import dotplotStorage
 
 from controller import *
 from seqTableCreator import *
+from databaseCreator import *
+from sequencedbwriter import *
+from sequencedbreader import *
 
 
 cnt = 0
@@ -76,7 +79,7 @@ def main():
     net.fetchFasta("3")
 
     s1 = DNASequence("123", "ACTG")
-    s2 = DNASequence("123", "TTTG")
+    s2 = DNASequence("1234", "TTTG")
     dotplot = DNADotplot(DotplotData(s1, s2))
     print(dotplot.create())
     dotplotStorage.store("dotplot.txt", dotplot.data())
@@ -88,9 +91,22 @@ def main():
 
     print(scoringMatrix)
     print(scoringMatrix.fetchAligned())
-    print(SequencesTableCreator.TABLE_NAME())
+    print(SequencesTableCreator.TABLE_NAME)
     print(", ".join(["ala", "ma", "kota"]))
+    print(str(np.array([1,2,3])))
 
+    conn = DBConnection()
+    DatabaseCreator.createDatabase(conn)
+    seqWriter = SequenceDbWriter(conn)
+    print("zapisane seq1?", seqWriter.write(s1))
+    print("zapisane seq2?", seqWriter.write(s2))
+    print("last error:", conn.lastError())
+    seqReader = SequenceDBReader(conn)
+    print([s.identifier for s in seqReader.read(["*"], None)])
+    print(["*"])
+
+    print([s.identifier for s in seqReader.read(["*"], None)])
+    print(["*222"])
     return sys.exit(app.exec_())
 
 

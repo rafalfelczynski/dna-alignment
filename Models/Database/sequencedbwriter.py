@@ -9,15 +9,15 @@ class SequenceDbWriter:
         self._conn: IDBConnection = dbconn
 
     def write(self, seq: Sequence):
-        sql = f"insert into {SequencesTableCreator.TABLE_NAME()}(id, seq) values(?, ?)"
+        sql = f"insert into {SequencesTableCreator.TABLE_NAME}({SequencesTableCreator.ID_COL_NAME}, {SequencesTableCreator.SEQ_COL_NAME}) values(?, ?)"
         query = self._conn.createQuery(sql)
         self.__bindQuery(query, seq)
         return self._conn.executeQuery(query)
 
 
     def __bindQuery(self, query: QSqlQuery, seq: Sequence):
-        query.bindValues(0, seq.identifier)
-        query.bindValues(1, seq.sequence)
+        query.bindValue(0, seq.identifier)
+        query.bindValue(1, seq.sequence)
 
 
 

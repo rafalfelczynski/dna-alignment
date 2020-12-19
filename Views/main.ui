@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>331</width>
+    <height>427</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+	border: 3px solid black;
+	border-radius: 5px;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QWidget {
+	background-color: #333333;
+	font: &quot;Times New Roman&quot;;
+    font-size: 14px;
+}
+QLabel {
+	background-color: #333333;
+	color: white;
+	font: italic &quot;Times New Roman&quot;;
+}
+QLineEdit {
+	border-radius: 8px;
+	border: 1px solid white;
+	background-color: #999999;
+	color: white;
+}
+QGroupBox {
+	background-color: #333333;
+	color: white;
+}
+QRadioButton {
+	background-color: #333333;
+	color: white;
+}
+
+QPushButton {
+    color: white;
+    border-radius: 12px;
+    border: 2px solid white;
+    background-color: qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1,
+    stop: 0 white,
+    stop: 0.3 gray,
+    stop: 0.6 gray,
+    stop: 0.9 darkgray,
+    stop: 1 black);
+    font: bold &quot;Times New Roman&quot;;
+    font-size: 14px;
+	height: 25px;
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1,
+    stop: 0 black,
+    stop: 0.3 darkgray,
+    stop: 0.6 gray,
+    stop: 0.8 gray,
+    stop: 1 white);
+}
+
+</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_6">
+    <item row="0" column="4">
+     <widget class="QGroupBox" name="groupBox_7">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Sequences</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="3" column="0">
+        <widget class="QPushButton" name="selectSeqFirstBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Select</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Sequence 1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QListWidget" name="seq2ListWidget"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QListWidget" name="seq1ListWidget">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Sequence 2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="selectSeqSecBtn">
+         <property name="text">
+          <string>Select</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QGroupBox" name="groupBox_9">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Scoring</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Match</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="matchLineEdit">
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Mismatch</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="mismatchLineEdit">
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Gap</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="gapLineEdit">
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QPushButton" name="fetchScoringBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Fetch scoring</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="groupBox_10">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Active processes</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_11">
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QListWidget" name="activeProcListWidget"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="4">
+     <widget class="QGroupBox" name="groupBox_8">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Processing</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="4" column="0">
+        <widget class="QLabel" name="seq2LedLbl">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border-radius: 10px;
+	border: 3px solid black;
+	background-color: #dd0000;
+	color: black;
+}</string>
+         </property>
+         <property name="text">
+          <string>Seq2</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border-radius: 10px;
+	border: 3px solid black;
+	background-color: #dd0000;
+	color: black;
+}</string>
+         </property>
+         <property name="text">
+          <string>Scoring</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="processBtn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Process</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" rowspan="2">
+        <widget class="QGroupBox" name="operationGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Operation</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QRadioButton" name="dotplotRadioBtn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Dotplot</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="alignmentRadioBtn">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Alignment</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="seq1LedLbl">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border-radius: 10px;
+	border: 3px solid black;
+	background-color: #dd0000;
+	color: black;
+}</string>
+         </property>
+         <property name="text">
+          <string>Seq1</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>331</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>Scoring</string>
+    </property>
+    <addaction name="scoringLoadFromFileAction"/>
+   </widget>
+   <widget class="QMenu" name="menuSequence">
+    <property name="title">
+     <string>Sequence</string>
+    </property>
+    <addaction name="seqLoadFromFileAction"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="helpAboutAction"/>
+   </widget>
+   <widget class="QMenu" name="menuResults">
+    <property name="title">
+     <string>Results</string>
+    </property>
+    <addaction name="resultsLoadFromFileAction"/>
+    <addaction name="resultsShowAction"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSequence"/>
+   <addaction name="menuResults"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="seqLoadFromFileAction">
+   <property name="text">
+    <string>Load from file</string>
+   </property>
+  </action>
+  <action name="helpAboutAction">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+  <action name="scoringLoadFromFileAction">
+   <property name="text">
+    <string>Load from file</string>
+   </property>
+  </action>
+  <action name="resultsLoadFromFileAction">
+   <property name="text">
+    <string>Load from file</string>
+   </property>
+  </action>
+  <action name="resultsShowAction">
+   <property name="text">
+    <string>Show</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
