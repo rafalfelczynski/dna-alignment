@@ -1,6 +1,4 @@
-from PySide2.QtCore import QProcess, Signal, QByteArray
-import PySide2
-import os
+from PySide2.QtCore import QProcess, Signal
 
 
 def pr(ident):

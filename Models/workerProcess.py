@@ -1,6 +1,4 @@
 from PySide2.QtCore import QProcess, Signal
-import typing
-from dotplotDBWriter import *
 
 
 class WorkerProcess(QProcess):

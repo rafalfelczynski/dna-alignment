@@ -1,5 +1,4 @@
-from FileFastaReader import FileFastaReader
-import os
+from Models.FileFastaReader import FileFastaReader
 
 from readerProcess import pr
 

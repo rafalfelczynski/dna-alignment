@@ -1,5 +1,5 @@
 import numpy as np
-from scoring import Scoring
+from Models.scoring import Scoring
 from collections import deque
 from typing import Deque
 import math

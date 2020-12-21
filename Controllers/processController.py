@@ -1,9 +1,6 @@
-from workerProcess import WorkerProcess
-from PySide2.QtCore import Signal, QTimer, QObject, QStandardPaths
-import pathlib
+from Models.workerProcess import WorkerProcess
+from PySide2.QtCore import Signal, QTimer, QObject
 import psutil
-import cProfile
-import time
 
 
 class ProcessController(QObject):
@@ -12,7 +9,7 @@ class ProcessController(QObject):
     process_finished = Signal(int)
 
     __PROCESSES_POOL_SIZE = 4
-    __TIMER_INTERVAL = 1000
+    __TIMER_INTERVAL = 500
 
     def __init__(self):
         super().__init__()
@@ -38,14 +35,19 @@ class ProcessController(QObject):
 
     def executeProcess(self, id):
         if id in self._processes:
-            print(f"proces od id {id} wykonany")
             proc: WorkerProcess = self._processes[id]
             proc.exec()
             self._procPids[id] = proc.pid()
             self._psutilProcs[proc.pid()] = psutil.Process(proc.pid())
         else:
             print("proces nie istnieje", id, self._processes.keys())
-        pass
+
+    def killProcess(self, id):
+        if id in self._processes:
+            proc: WorkerProcess = self._processes[id]
+            if proc.state() == WorkerProcess.ProcessState.Running:
+                proc.kill()
+                self._removeProcess(id)
 
     def procPidFromId(self, id):
         if id in self._procPids:

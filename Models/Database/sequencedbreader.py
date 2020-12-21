@@ -1,16 +1,16 @@
-from Database.idbconnection import *
-from sequence import Sequence
-from typing import List
-from Database.seqTableCreator import *
-from dnaSequence import DNASequence
+from Models.Database.idbconnection import *
+from Models.sequence import Sequence
+from typing import List, Dict
+from Models.Database.seqTableCreator import *
+from Models.dnaSequence import DNASequence
 
 
-class SequenceDBReader:
+class SequenceDbReader:
 
     def __init__(self, dbconn: IDBConnection):
         self._conn: IDBConnection = dbconn
 
-    def read(self, cols: List[str], where: str):
+    def read(self, cols: List[str], where: str) -> List[Dict[str, str]]:
         sql = f"select {','.join(cols)} from {SequencesTableCreator.TABLE_NAME}"
         if where != "" and where is not None:
             sql += f" where {where}"
@@ -19,24 +19,34 @@ class SequenceDBReader:
         if self._conn.executeQuery(query):
             while query.next():
                 record = query.record()
-                sequence = DNASequence("", "")
-                print("record count:", record.count(), record.field(0).name(), "sql:", query.lastQuery(), cols)
+                # sequence = DNASequence("", "")
+                seqMap = dict()
                 for i in range(0, record.count()):
-                    self.mapColToSequenceField(record.field(i), sequence)
-                seqs.append(sequence)
+                    self.mapColToSequenceField(record.field(i), seqMap)
+                seqs.append(seqMap)
             self._conn.close()
         return seqs
 
+    def checkIfExists(self, where: str):
+        if where == "" or where is None:
+            return False
+        sql = f"select 1 from {SequencesTableCreator.TABLE_NAME} where {where}"
+        query = self._conn.createQuery(sql)
+        if self._conn.executeQuery(query):
+            if query.next():
+                return True
+        return False
 
     def __bindQuery(self, query, cols):
         for i in range(0, len(cols)):
             query.bindValue(i, cols[i])
 
-    def mapColToSequenceField(self, col, seq: Sequence):
+    @classmethod
+    def mapColToSequenceField(cls, col, seqMap: dict):
         if col.name() == SequencesTableCreator.ID_COL_NAME:
-            seq.identifier = col.value()
+            seqMap[SequencesTableCreator.ID_COL_NAME] = col.value()
         elif col.name() == SequencesTableCreator.SEQ_COL_NAME:
-            seq.sequence = col.value()
+            seqMap[SequencesTableCreator.SEQ_COL_NAME] = col.value()
 
 
 

@@ -16,8 +16,8 @@ class Scoring:
     def toKey(key: str):
         return Scoring.Keys(key)
 
-    def __init__(self):
-        self._scoring = dict()
+    def __init__(self, match: float, mismatch: float, gap: float):
+        self._scoring = {self.Keys.Match: match, self.Keys.Mismatch: mismatch, self.Keys.Gap: gap}
 
     def __setitem__(self, key: 'Scoring.Keys', value: float):
         if key in self.Keys:

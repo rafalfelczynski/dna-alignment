@@ -1,6 +1,5 @@
-from dotplot import Dotplot
+from Models.dotplot import Dotplot, DotplotData
 import numpy as np
-from dotplot import DotplotData
 
 
 class DNADotplot(Dotplot):

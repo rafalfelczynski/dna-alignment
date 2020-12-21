@@ -1,6 +1,6 @@
-from Database.seqTableCreator import *
-from Database.dotplotTableCreator import *
-from Database.dbconnection import *
+from Models.Database.seqTableCreator import *
+from Models.Database.dotplotTableCreator import *
+from Models.Database.dbconnection import *
 
 
 class DatabaseCreator:

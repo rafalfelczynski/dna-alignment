@@ -1,4 +1,4 @@
-from Database.idbconnection import *
+from Models.Database.idbconnection import *
 
 
 class SequencesTableCreator:

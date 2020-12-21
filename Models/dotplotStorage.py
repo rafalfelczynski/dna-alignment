@@ -1,7 +1,7 @@
 import numpy as np
-from dnaDotplot import DNADotplot
-from dnaSequence import DNASequence
-from dotplot import Dotplot, DotplotData
+from Models.dnaDotplot import DNADotplot
+from Models.dnaSequence import DNASequence
+from Models.dotplot import Dotplot, DotplotData
 from PySide2.QtCore import QRegExp
 
 

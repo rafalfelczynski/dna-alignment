@@ -1,5 +1,4 @@
 from PySide2.QtCore import QFile, QThread, Signal, QObject, QMutex, QMutexLocker
-from multiprocessing.dummy import Pool
 
 
 class WorkerThread(QThread):

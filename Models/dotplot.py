@@ -1,4 +1,4 @@
-from sequence import Sequence
+from Models.sequence import Sequence
 
 
 class DotplotData:

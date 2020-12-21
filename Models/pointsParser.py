@@ -1,9 +1,9 @@
-from scoring import Scoring
+from Models.scoring import Scoring
 
 
 def parseScoring(filePath: str):
     with open(filePath, "r") as file:
-        scoring = Scoring()
+        scoring = Scoring(0,0,0)
         for line in file.readlines():
             key, score = line.strip().split(" ")
             if not Scoring.isAllowedKey(key):

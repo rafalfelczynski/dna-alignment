@@ -1,8 +1,8 @@
 import sys
-from dotplotDBWriter import *
-from sequencedbreader import *
-from dbconnection import *
-
+from Database.dotplotDBWriter import DotplotDBWriter
+from Database.sequencedbreader import SequenceDbReader
+from Database.dbconnection import DBConnection
+from Models.sequence import Sequence
 
 
 if __name__ == "__main__":
@@ -10,7 +10,7 @@ if __name__ == "__main__":
         idSeq1 = sys.argv[1]
         idSeq2 = sys.argv[2]
         dbConnection = DBConnection()
-        seqReader = SequenceDBReader(dbConnection)
+        seqReader = SequenceDbReader(dbConnection)
         seqsFromDb = seqReader.read(["*"], SequencesTableCreator.ID_COL_NAME + f" in ({idSeq1}, {idSeq2})")
         if len(seqsFromDb) == 2:
             if seqsFromDb[0].identifier == idSeq1:

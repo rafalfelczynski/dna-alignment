@@ -1,7 +1,7 @@
 import numpy as np
-from scoring import Scoring
-from sequence import Sequence
-from scoringMatrix import ScoringMatrix
+from Models.scoring import Scoring
+from Models.sequence import Sequence
+from Models.scoringMatrix import ScoringMatrix
 
 
 class ScoringMatrixCreator:

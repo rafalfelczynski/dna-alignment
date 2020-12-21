@@ -1,7 +1,7 @@
 
-from Database.idbconnection import *
-from sequence import Sequence
-from seqTableCreator import *
+from Models.Database.idbconnection import *
+from Models.sequence import Sequence
+from Models.Database.seqTableCreator import *
 
 
 class SequenceDbWriter:
@@ -14,7 +14,6 @@ class SequenceDbWriter:
         query = self._conn.createQuery(sql)
         self.__bindQuery(query, seq)
         return self._conn.executeQuery(query)
-
 
     def __bindQuery(self, query: QSqlQuery, seq: Sequence):
         query.bindValue(0, seq.identifier)

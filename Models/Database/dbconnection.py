@@ -1,4 +1,4 @@
-from Database.idbconnection import *
+from Models.Database.idbconnection import *
 
 
 class DBException(Exception):
@@ -9,11 +9,13 @@ class DBException(Exception):
 
 class DBConnection(IDBConnection):
 
-    __CONNECTION_NAME = "conn1"
+    __index = 0
     DB_NAME = "alignment_app.db"
 
     def __init__(self):
-        self.__connection: QSqlDatabase = QSqlDatabase.addDatabase("QSQLITE", DBConnection.__CONNECTION_NAME)
+        self.__connectionName = "conn"+str(DBConnection.__index)
+        DBConnection.__index += 1
+        self.__connection: QSqlDatabase = QSqlDatabase.addDatabase("QSQLITE", self.__connectionName)
         self.__connection.setDatabaseName(self.DB_NAME)
 
     def connect(self) -> bool:
@@ -28,7 +30,7 @@ class DBConnection(IDBConnection):
             query.prepare(sql)
             return query
         else:
-            raise DBException("Couldn't connect to database")
+            raise DBException("Couldn't connect to database "+ self.__connection.lastError().text())
 
     def executeQuery(self, query: QSqlQuery):
         if self.connect():
