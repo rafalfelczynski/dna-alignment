@@ -1,4 +1,5 @@
-from idbconnection import *
+
+from Database.idbconnection import *
 from sequence import Sequence
 from seqTableCreator import *
 

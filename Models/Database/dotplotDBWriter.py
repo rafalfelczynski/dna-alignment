@@ -1,6 +1,6 @@
-from idbconnection import *
+from Database.idbconnection import *
 from dotplot import *
-from dotplotTableCreator import *
+from Database.dotplotTableCreator import *
 
 
 class DotplotDBWriter:

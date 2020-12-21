@@ -1,7 +1,7 @@
-from idbconnection import *
+from Database.idbconnection import *
 from sequence import Sequence
 from typing import List
-from seqTableCreator import *
+from Database.seqTableCreator import *
 from dnaSequence import DNASequence
 
 

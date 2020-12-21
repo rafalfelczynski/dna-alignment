@@ -7,7 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Controllers" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Models/Database" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (environment)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (interpreter)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

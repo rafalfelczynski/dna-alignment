@@ -10,7 +10,7 @@ class DNASequence(Sequence):
     def isValid(self):
         sequenceCopy = copy.deepcopy(self.sequence)
         sequenceCopy = sequenceCopy.replace("A", "").replace("C", "").replace("G", "").replace("T", "")
-        return sequenceCopy is ""
+        return sequenceCopy == ""
 
 
 

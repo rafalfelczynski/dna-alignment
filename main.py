@@ -24,6 +24,8 @@ from seqTableCreator import *
 from databaseCreator import *
 from sequencedbwriter import *
 from sequencedbreader import *
+import psutil
+from processController import *
 
 
 cnt = 0
@@ -45,7 +47,8 @@ def finito(ident, data):
 def main():
     global cnt, start
     app = QApplication([])
-    contr = Controller()
+    procContr = ProcessController()
+    contr = Controller(procContr)
 
     fileReader = FileFastaReader()
     fileReader.data_ready.connect(printData)
@@ -98,15 +101,9 @@ def main():
     conn = DBConnection()
     DatabaseCreator.createDatabase(conn)
     seqWriter = SequenceDbWriter(conn)
-    print("zapisane seq1?", seqWriter.write(s1))
-    print("zapisane seq2?", seqWriter.write(s2))
-    print("last error:", conn.lastError())
     seqReader = SequenceDBReader(conn)
-    print([s.identifier for s in seqReader.read(["*"], None)])
-    print(["*"])
 
-    print([s.identifier for s in seqReader.read(["*"], None)])
-    print(["*222"])
+
     return sys.exit(app.exec_())
 
 
