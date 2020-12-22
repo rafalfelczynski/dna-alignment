@@ -1,3 +1,4 @@
+from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from Views.mainwindow import MainWindow
@@ -14,6 +15,9 @@ from Models.scoring import Scoring
 from Models.Database.databaseCreator import DatabaseCreator
 from Views.infoDialog import InfoDialog
 from Views.confirmDialog import ConfirmDialog
+from PySide2.QtCore import Signal
+from Views.autoPosMenu import AutoPosMenu
+import resources.res
 
 
 def isFloat(num):
@@ -25,9 +29,14 @@ def isFloat(num):
         return False
 
 
-class Controller:
+class Controller(QObject):
+
+    finished = Signal()
+
+    __SYSTEM_TRAY_ICON = ":/dna_icon.png"
 
     def __init__(self, procContr):
+        super().__init__()
         self._networkManager = QNetworkAccessManager()
         self._dbConnection = DBConnection()
         DatabaseCreator.createDatabase(self._dbConnection)
@@ -44,6 +53,10 @@ class Controller:
         self._selectedScoring: Scoring = None
         self._selectedFirstSeq: str = None
         self._selectedSecSeq: str = None
+        self._sysTrayIcon: QSystemTrayIcon = ...
+        self._sysTrayIconMenu: QMenu = ...
+        self._createSystemTrayIcon()
+        self._sysTrayIcon.show()
 
     def connectMainWindow(self):
         self.mainWindow.scoring_selected.connect(self.validateScoring)
@@ -52,6 +65,26 @@ class Controller:
         self.mainWindow.fetch_seq_clicked.connect(self.dialogContr.showDialog)
         self.mainWindow.seq_selected.connect(self._seqSelected)
         self.mainWindow.process_double_clicked.connect(self._processDoubleClicked)
+        self.mainWindow.window_minimized.connect(self._foldToSystemTray)
+        self.mainWindow.window_closed.connect(self._foldToSystemTray)
+
+    def _createSystemTrayIcon(self):
+        self._sysTrayIcon = QSystemTrayIcon()
+        self._sysTrayIcon.setIcon(QIcon(Controller.__SYSTEM_TRAY_ICON))
+        self._createSystemTrayIconMenu()
+        self._sysTrayIcon.activated.connect(self._systemTrayIconClicked)
+        self._sysTrayIcon.setToolTip("DNA alignment application")
+
+    def _createSystemTrayIconMenu(self):
+        self._sysTrayIconMenu = AutoPosMenu()
+        quitAction = QAction("Quit", self._sysTrayIconMenu)
+        quitAction.triggered.connect(self._closeResourcesAndQuit)
+        self._sysTrayIconMenu.addAction(quitAction)
+        self._sysTrayIcon.setContextMenu(self._sysTrayIconMenu)
+
+    def _systemTrayIconClicked(self, reason: QSystemTrayIcon.ActivationReason):
+        if reason == QSystemTrayIcon.DoubleClick:
+            self.mainWindow.showNormal()
 
     def connectSeqManager(self):
         self.seqManager.new_seq_available.connect(self.mainWindow.newSeqAvailable)
@@ -98,11 +131,7 @@ class Controller:
         self.mainWindow.removeProcess(id)
 
     def validateScoring(self, match, mismatch, gap):
-        isOk = False
-        if isFloat(match) \
-                and isFloat(mismatch) \
-                and isFloat(gap):
-            isOk = True
+        isOk = isFloat(match) and isFloat(mismatch) and isFloat(gap)
         if isOk:
             self._selectedScoring = Scoring(float(match), float(mismatch), float(gap))
             self.mainWindow.scoringClickValidatedOk()
@@ -125,9 +154,16 @@ class Controller:
         dialog.accepted.connect(lambda: self.procContr.killProcess(id))
         dialog.exec_()
 
+    def _foldToSystemTray(self):
+        self._sysTrayIcon.show()
+        self.mainWindow.hide()
 
+    def _restoreFromSystemTray(self):
+        self.mainWindow.show()
 
-
+    def _closeResourcesAndQuit(self):
+        # Save data to database if needed, kill all running processes and quit
+        self.finished.emit()
 
 
 

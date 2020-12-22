@@ -1,6 +1,9 @@
 from Views.ui_mainwindow import *
 from typing import List
 from Models.scoring import Scoring
+from PySide2.QtGui import QFocusEvent, QCloseEvent
+from PySide2.QtCore import QEvent
+from PySide2.QtWidgets import QWidget
 
 
 class MainWindow(QMainWindow):
@@ -11,6 +14,8 @@ class MainWindow(QMainWindow):
     fetch_seq_clicked = Signal()
     seq_selected = Signal(int, str)
     process_double_clicked = Signal(int)
+    window_minimized = Signal()
+    window_closed = Signal()
 
     __BLINK_DURATION = 500
 
@@ -40,6 +45,14 @@ class MainWindow(QMainWindow):
         self._connectSlots()
         self.ui.activeProcTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self._ledBlinking = {1: False, 2: False, 3: False}
+
+    def changeEvent(self, event: QEvent) -> None:
+        if self.windowState() == Qt.WindowMinimized:
+            self.window_minimized.emit()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        print("closed")
+        self.window_closed.emit()
 
     def addSequences(self, seqIds: List[str]):
         for id in seqIds:
