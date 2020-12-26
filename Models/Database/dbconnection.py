@@ -35,7 +35,6 @@ class DBConnection(IDBConnection):
     def executeQuery(self, query: QSqlQuery):
         if self.connect():
             succ = query.exec_()
-            #self.__connection.close()
             return succ
         else:
             raise DBException("Couldn't connect to database")

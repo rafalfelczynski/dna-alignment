@@ -1,4 +1,3 @@
-
 from Models.Database.idbconnection import *
 from Models.sequence import Sequence
 from Models.Database.seqTableCreator import *

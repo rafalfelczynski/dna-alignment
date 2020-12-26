@@ -1,9 +1,10 @@
 from Views.ui_mainwindow import *
 from typing import List
 from Models.scoring import Scoring
-from PySide2.QtGui import QFocusEvent, QCloseEvent
-from PySide2.QtCore import QEvent
-from PySide2.QtWidgets import QWidget
+from PySide2.QtGui import *
+from PySide2.QtCore import *
+from PySide2.QtWidgets import *
+import resources.res
 
 
 class MainWindow(QMainWindow):
@@ -16,52 +17,53 @@ class MainWindow(QMainWindow):
     process_double_clicked = Signal(int)
     window_minimized = Signal()
     window_closed = Signal()
+    drag_and_drop_accepted = Signal(QMimeData)
 
     __BLINK_DURATION = 500
 
     __OK_KEY = "ok"
-    __LED_OK_STYLESHEET = "QLabel { border-radius: 10px;" \
-                          " background-color: rgba(64, 255, 0, 200);" \
-                          " border: 3px solid black;" \
-                          " color: black;" \
-                          " }"
+    __LED_OK_STYLESHEET = ":/green_led.png"
     __IDLE_KEY = "idle"
-    __LED_IDLE_STYLESHEET = "QLabel { border-radius: 10px;" \
-                            " border: 3px solid black;" \
-                            " background-color: rgba(255, 173, 51, 200);" \
-                            " color: black;" \
-                            " }"
+    __LED_IDLE_STYLESHEET = ":/orange_led.png"
     __WRONG_KEY = "wrong"
-    __LED_WRONG_STYLESHEET = "QLabel { border-radius: 10px;" \
-                             " border: 3px solid black;" \
-                             " background-color: rgba(255, 0, 0, 200);" \
-                             " color: black;" \
-                             " }"
+    __LED_WRONG_STYLESHEET = ":/red_led.png"
+    __SELECT_BTN_ICON_PATH = ":/select_btn.png"
 
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self._connectSlots()
-        self.ui.activeProcTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.activeProcTableWidget.horizontalHeader().setSectionResizeMode( QHeaderView.Stretch)
         self._ledBlinking = {1: False, 2: False, 3: False}
+        QTimer.singleShot(50, lambda: self.setDefaultIcons())
+        #self.setAcceptDrops(True)
 
     def changeEvent(self, event: QEvent) -> None:
         if self.windowState() == Qt.WindowMinimized:
             self.window_minimized.emit()
 
     def closeEvent(self, event: QCloseEvent) -> None:
-        print("closed")
         self.window_closed.emit()
+
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
+        # print("drag enter")
+        # self.drag_validation_needed.emit(event)
+        # event.acceptProposedAction()
+        print("main window drag enter")
+        pass
+
+    def dropEvent(self, event: QDropEvent) -> None:
+        print("main window drop event")
 
     def addSequences(self, seqIds: List[str]):
         for id in seqIds:
             self.newSeqAvailable(id)
 
-    def uncheckSequences(self):
-        # Uncheck each sequence in list view...
+    def setDefaultIcons(self):
         self._setLedStyleSheet(1, MainWindow.__IDLE_KEY)
         self._setLedStyleSheet(2, MainWindow.__IDLE_KEY)
+        self._setLedStyleSheet(3, MainWindow.__IDLE_KEY)
 
     def addProcess(self, id, pid, date, seq1id, seq2id, scoring: Scoring):
         rowPosition = self.ui.activeProcTableWidget.rowCount()
@@ -72,9 +74,14 @@ class MainWindow(QMainWindow):
         self.ui.activeProcTableWidget.setItem(rowPosition, 2, QTableWidgetItem(str(date)))
         self.ui.activeProcTableWidget.setItem(rowPosition, 3, QTableWidgetItem(str(seq1id)))
         self.ui.activeProcTableWidget.setItem(rowPosition, 4, QTableWidgetItem(str(seq2id)))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 5, QTableWidgetItem(str(scoring[Scoring.Keys.Match])))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 6, QTableWidgetItem(str(scoring[Scoring.Keys.Mismatch])))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 7, QTableWidgetItem(str(scoring[Scoring.Keys.Gap])))
+        if scoring is not None:
+            self.ui.activeProcTableWidget.setItem(rowPosition, 5, QTableWidgetItem(str(scoring[Scoring.Keys.Match])))
+            self.ui.activeProcTableWidget.setItem(rowPosition, 6, QTableWidgetItem(str(scoring[Scoring.Keys.Mismatch])))
+            self.ui.activeProcTableWidget.setItem(rowPosition, 7, QTableWidgetItem(str(scoring[Scoring.Keys.Gap])))
+        else:
+            self.ui.activeProcTableWidget.setItem(rowPosition, 5, QTableWidgetItem("---"))
+            self.ui.activeProcTableWidget.setItem(rowPosition, 6, QTableWidgetItem("---"))
+            self.ui.activeProcTableWidget.setItem(rowPosition, 7, QTableWidgetItem("---"))
         for i in range(7, cols):
             self.ui.activeProcTableWidget.setItem(cols - 1, i, QTableWidgetItem(""))
 
@@ -105,7 +112,7 @@ class MainWindow(QMainWindow):
         self.ui.activeProcTableWidget.cellDoubleClicked.connect(self._processDoubleClicked)
 
     def _setLedStyleSheet(self, led, style):
-        st = ""
+        st = QPixmap()
         if style == MainWindow.__OK_KEY:
             st = self.__LED_OK_STYLESHEET
         elif style == MainWindow.__WRONG_KEY:
@@ -120,7 +127,7 @@ class MainWindow(QMainWindow):
         elif led == 3:
             lbl = self.ui.scoringLedLbl
         if lbl is not None:
-            lbl.setStyleSheet(st)
+            lbl.setPixmap(QPixmap(st).scaled(lbl.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
 
     def scoringClickValidatedOk(self):
         self._ledBlinking[3] = False
@@ -142,9 +149,9 @@ class MainWindow(QMainWindow):
             self.blinkLed(1)
 
     def _secSeqSelected(self):
-        seq2Index = self.ui.seq2ListWidget.currentRow()
+        seq2Index = self.ui.seq1ListWidget.currentRow()
         if seq2Index >= 0:
-            self.seq_selected.emit(2, self.ui.seq2ListWidget.item(seq2Index).text())
+            self.seq_selected.emit(2, self.ui.seq1ListWidget.item(seq2Index).text())
             self._ledBlinking[2] = False
             self._setLedStyleSheet(2, MainWindow.__OK_KEY)
         else:
@@ -183,10 +190,19 @@ class MainWindow(QMainWindow):
 
     def newSeqAvailable(self, id: str):
         self.ui.seq1ListWidget.addItem(id)
-        self.ui.seq2ListWidget.addItem(id)
+
+    def removeSequence(self, id: str):
+        index: int = 0
+        size = self.ui.seq1ListWidget.count()
+        found = False
+        while index < size and not found:
+            item = self.ui.seq1ListWidget.item(index)
+            if item.text() == id:
+                self.ui.seq1ListWidget.takeItem(index)
+                found = True
+            index += 1
 
     def _processDoubleClicked(self, row: int, column: int):
-        print("id:", int(self.ui.activeProcTableWidget.item(row, 0).text()))
         self.process_double_clicked.emit(int(self.ui.activeProcTableWidget.item(row, 0).text()))
 
 

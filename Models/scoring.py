@@ -17,6 +17,9 @@ class Scoring:
         return Scoring.Keys(key)
 
     def __init__(self, match: float, mismatch: float, gap: float):
+        self.match = match
+        self.mismatch = mismatch
+        self.gap = gap
         self._scoring = {self.Keys.Match: match, self.Keys.Mismatch: mismatch, self.Keys.Gap: gap}
 
     def __setitem__(self, key: 'Scoring.Keys', value: float):

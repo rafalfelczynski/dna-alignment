@@ -1,4 +1,5 @@
 from Views.newSeqDialog import *
+from Views.infoDialog import *
 from Models.sequenceManager import SeqManager
 
 
@@ -8,7 +9,6 @@ class SeqDialogController(QObject):
         super().__init__()
         self._dialog: NewSeqDialog = ...
         self._seqStorage = seqStorage
-        pass
 
     def showDialog(self):
         self._dialog = NewSeqDialog()

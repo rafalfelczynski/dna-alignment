@@ -10,7 +10,7 @@ class SeqDBWriter(ISeqWriter):
         self._reader = SequenceDbWriter(dbConn)
         pass
 
-    def writeSeq(self, seq: Sequence):
+    def writeSeq(self, seq: Sequence) -> bool:
         return self._reader.write(seq)
 
 

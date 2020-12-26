@@ -1,5 +1,6 @@
 from Models.workerProcess import WorkerProcess
 from PySide2.QtCore import Signal, QTimer, QObject
+from Models.scoring import Scoring
 import psutil
 
 
@@ -21,17 +22,23 @@ class ProcessController(QObject):
         self._getProcInfoTimer.timeout.connect(self.getProcInfo)
         self._getProcInfoTimer.start(ProcessController.__TIMER_INTERVAL)
 
-    def createDotplotProcess(self, seq1Id, seq2Id, scoring):
-        return self._createProcess(f"python Models/dotplotProgram.py {str(seq1Id)} {str(seq2Id)}")
+    def createDotplotProcess(self, seq1Id, seq2Id):
+        return self._createProcess(f"python Models/dotplotProgram.py $$${str(seq1Id)}$$${str(seq2Id)}")
 
     def createAlignmentProcess(self, seq1Id, seq2Id, scoring):
-        return self._createProcess(f"python Models/alignmentProgram.py {str(seq1Id)} {str(seq2Id)}")
+        return self._createProcess(f"python Models/alignmentProgram.py $$${str(seq1Id)}$$${str(seq2Id)}$$${scoring.match}$$${scoring.mismatch}$$${scoring.gap}")
 
     def canCreate(self) -> bool:
         if self._nextProcIndex in self._processes:
             return False
         else:
             return True
+
+    def procExists(self, selectedFirstSeq: str, selectedSecSeq: str, selectedScoring: Scoring):
+        return False
+
+    def procExists(self, selectedFirstSeq, selectedSecSeq):
+        return False
 
     def executeProcess(self, id):
         if id in self._processes:

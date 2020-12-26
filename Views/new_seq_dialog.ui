@@ -56,6 +56,11 @@ QPushButton {
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="0">
        <widget class="QLineEdit" name="identifierLineEdit">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::ClickFocus</enum>
         </property>
@@ -66,6 +71,11 @@ QPushButton {
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Insert identifier</string>
         </property>
@@ -84,6 +94,11 @@ QPushButton {
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true"/>

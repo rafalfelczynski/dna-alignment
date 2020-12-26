@@ -5,15 +5,11 @@ from Views.fileDropAcceptor import *
 
 
 def main():
-    global cnt, start
     app = QApplication([])
-    # app.setQuitOnLastWindowClosed(False)
-    # procContr = ProcessController()
-    # contr = Controller(procContr)
-    # contr.finished.connect(app.quit)
-    f = FileDropAcceptor()
-    f.show()
-    print("".join(["ala", "ma", "kota"]))
+    app.setQuitOnLastWindowClosed(False)
+    procContr = ProcessController()
+    contr = Controller(procContr)
+    contr.finished.connect(app.quit)
     return sys.exit(app.exec_())
 
 

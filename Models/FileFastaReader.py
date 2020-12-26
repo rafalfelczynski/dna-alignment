@@ -1,27 +1,10 @@
-from PySide2.QtCore import QFile, QThread, Signal, QObject, QMutex, QMutexLocker
+from PySide2.QtCore import QFile, Signal, QObject, QRegExp
+from Models.sequence import Sequence, NotValidSequenceException
 
 
-class WorkerThread(QThread):
-
-    data_ready = Signal(str, str)
-    file_not_found = Signal(str)
-    thread_exit = Signal(int)
-
-    def __init__(self, filePath, identifier):
-        super().__init__()
-        self._filePath = filePath
-        self._identifier = identifier
-
-    def run(self):
-        file = QFile(self._filePath)
-        if file.open(QFile.ReadOnly):
-            identifier = file.readLine().trimmed().data().decode().replace("\n", "").replace("\r", "")
-            data = file.readAll().data().decode().replace("\n", "").replace("\r", "")
-            self.data_ready.emit(identifier, data)
-            return identifier, data
-        else:
-            self.file_not_found.emit(self._filePath)
-        self.thread_exit.emit(self._identifier)
+class NotAFastaFileException(Exception):
+    def __init__(self, msg="File does not contain information in fasta format"):
+        super().__init__(msg)
 
 
 class FileFastaReader(QObject):
@@ -31,31 +14,25 @@ class FileFastaReader(QObject):
 
     def __init__(self):
         super().__init__()
-        self._workers = {}
-        self._workerCounter: int = 0
-        self.__workerLock = QMutex()
+        self._acceptableFilesRegex: QRegExp = QRegExp(".*.(fasta|txt)")
 
-    def getData(self, filePath: str):
-        file = QFile(filePath)
-        if file.open(QFile.ReadOnly):
-            identifier = file.readLine().trimmed().data().decode().replace("\n", "").replace("\r", "")
-            data = file.readAll().data().decode().replace("\n", "").replace("\r", "")
-            self.data_ready.emit(identifier, data)
-            return identifier, data
+    def read(self, filePath: str) -> Sequence:
+        if self.isValidFile(filePath):
+            with open(filePath, "r", encoding="utf=8") as file:
+                identifier = file.readline().strip()[1:]
+                sequence = "".join(file.readlines()).replace("\n", "")
+                return Sequence(identifier, sequence)
         else:
-            raise FileNotFoundError(self.__CANNOT_OPEN_FILE_ERROR + " " + filePath)
-            # self.file_not_found.emit(self._filePath)
-        #self.thread_exit.emit(self._identifier)
-        # _worker = WorkerThread(filePath, self._workerCounter)
-        # _worker.data_ready.connect(self.data_ready)
-        # _worker.thread_exit.connect(self.__deleteWorker)
-        # self._workers[self._workerCounter] = _worker
-        # self._workerCounter += 1
-        # _worker.run()
+            return None
 
-    def __deleteWorker(self, workerId):
-        locker = QMutexLocker(self.__workerLock)
-        self._workers.pop(workerId)
+    def isValidFile(self, filePath):
+        if QFile(filePath).exists():
+            with open(filePath, "r", encoding="utf=8") as file:
+                identifier = file.readline().strip()
+                sequence = file.readline().strip()
+                if len(identifier) > 0 and identifier[0] == ">" and sequence != "":
+                    return True
+        return False
 
 
 

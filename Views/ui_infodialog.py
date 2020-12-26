@@ -47,6 +47,7 @@ class Ui_Dialog(object):
 "    font-size: 14px;\n"
 "	width: 50px;\n"
 "}")
+        Dialog.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.gridLayout = QGridLayout(Dialog)
         self.gridLayout.setObjectName(u"gridLayout")
         self.buttonBox = QDialogButtonBox(Dialog)
@@ -60,9 +61,13 @@ class Ui_Dialog(object):
 
         self.textEdit = QPlainTextEdit(Dialog)
         self.textEdit.setObjectName(u"textEdit")
-        self.textEdit.setEnabled(False)
+        self.textEdit.setEnabled(True)
+        font = QFont()
+        font.setPointSize(10)
+        self.textEdit.setFont(font)
         self.textEdit.setFocusPolicy(Qt.ClickFocus)
         self.textEdit.setStyleSheet(u"")
+        self.textEdit.setTextInteractionFlags(Qt.TextSelectableByKeyboard|Qt.TextSelectableByMouse)
 
         self.gridLayout.addWidget(self.textEdit, 0, 0, 1, 1)
 

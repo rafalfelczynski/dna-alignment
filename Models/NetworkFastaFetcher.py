@@ -9,7 +9,8 @@ class NetworkFastaFetcher(QObject):
         QNetworkReply.NetworkError.ConnectionRefusedError: "*** Connection Refused *** "
                                                            "The server is currently not accepting requests."
                                                            " Try again later!",
-        QNetworkReply.NetworkError.NoError: "Everything was OK."
+        QNetworkReply.NetworkError.NoError: "Everything was OK.",
+        QNetworkReply.NetworkError.ProtocolInvalidOperationError: "There is no sequence with that identifier!"
     }
     __UNKNOWN_ERROR_MSG = "UNKNOWN ERROR"
     data_ready = Signal(str, str)
@@ -38,29 +39,25 @@ class NetworkFastaFetcher(QObject):
 
     def __dataFetched(self, replyObjId):
         if replyObjId in self.__replyObjects:
-            reply = self.__replyObjects[replyObjId]
+            reply: QNetworkReply = self.__replyObjects[replyObjId]
             identifier = ""
             sequence = ""
-            if reply.isFinished():
+            if reply.isFinished() and reply.error() == QNetworkReply.NetworkError.NoError:
                 identifier = reply.readLine().data().decode().replace("\n", "")
                 sequence = reply.readAll().data().decode().replace("\n", "")
                 identifier, sequence = self.__validateFetchedData(identifier, sequence)
-            self.data_ready.emit(identifier, sequence)
+                self.data_ready.emit(identifier, sequence)
             self.__replyObjects.pop(replyObjId)
-        else:
-            self.error_occurred.emit(f"Reply object id {replyObjId} not known!")
 
     def _parseError(self, errorCode: QNetworkReply.NetworkError, identifier, reply):
         if errorCode in self.__ERROR_CODES_MSGS:
-            self.error_occurred.emit(f"There was an error{self.__ERROR_CODES_MSGS[errorCode]} during"
-                                     f" processing of request for identifier: {identifier}")
+            self.error_occurred.emit(f"There was an error during the processing of the request for the identifier: {identifier}"
+                                     f"\nError message: {self.__ERROR_CODES_MSGS[errorCode]}")
         else:
-            self.error_occurred.emit(f"There was an error {self.__UNKNOWN_ERROR_MSG} during"
-                                     f" processing of request for identifier: {identifier}"
-                                     f" Error message: {reply.errorString()}")
+            self.error_occurred.emit(f"There was an error during the processing of the request for the identifier: {identifier}"
+                                     f"\nError message: {reply.errorString()}")
 
     def _sslErrorsOccurred(self, errors):
-        print("ssl errors")
         for err in errors:  # type: QSslError
             self.error_occurred.emit("SSL error! " + err.errorString())
 

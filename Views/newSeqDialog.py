@@ -9,6 +9,7 @@ class NewSeqDialog(QDialog):
         super().__init__()
         self.ui = Ui_NewSequence()
         self.ui.setupUi(self)
+        self.resize(200, 120)
 
     def accept(self) -> None:
         super().accept()

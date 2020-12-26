@@ -57,6 +57,9 @@ class Ui_NewSequence(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.identifierLineEdit = QLineEdit(self.widget)
         self.identifierLineEdit.setObjectName(u"identifierLineEdit")
+        font = QFont()
+        font.setPointSize(10)
+        self.identifierLineEdit.setFont(font)
         self.identifierLineEdit.setFocusPolicy(Qt.ClickFocus)
         self.identifierLineEdit.setAlignment(Qt.AlignCenter)
 
@@ -64,6 +67,7 @@ class Ui_NewSequence(object):
 
         self.label = QLabel(self.widget)
         self.label.setObjectName(u"label")
+        self.label.setFont(font)
         self.label.setAlignment(Qt.AlignCenter)
 
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
@@ -78,6 +82,7 @@ class Ui_NewSequence(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttonBox.sizePolicy().hasHeightForWidth())
         self.buttonBox.setSizePolicy(sizePolicy)
+        self.buttonBox.setFont(font)
         self.buttonBox.setStyleSheet(u"")
         self.buttonBox.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.buttonBox.setOrientation(Qt.Horizontal)

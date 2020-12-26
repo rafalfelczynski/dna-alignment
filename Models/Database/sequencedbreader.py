@@ -19,7 +19,6 @@ class SequenceDbReader:
         if self._conn.executeQuery(query):
             while query.next():
                 record = query.record()
-                # sequence = DNASequence("", "")
                 seqMap = dict()
                 for i in range(0, record.count()):
                     self.mapColToSequenceField(record.field(i), seqMap)

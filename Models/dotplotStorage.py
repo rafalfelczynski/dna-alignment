@@ -6,7 +6,7 @@ from PySide2.QtCore import QRegExp
 
 
 def store(filePath: str, dotplot: DotplotData):
-    with open(filePath, "w") as dotplotFile:
+    with open(filePath, "w", encoding="utf-8") as dotplotFile:
         dotplotFile.write(dotplot.seq1.identifier+"\n")
         dotplotFile.write(dotplot.seq1.sequence+"\n")
         dotplotFile.write(dotplot.seq2.identifier+"\n")

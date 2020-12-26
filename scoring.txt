@@ -1,3 +1,0 @@
-match 3
-mismatch -3
-gap -1

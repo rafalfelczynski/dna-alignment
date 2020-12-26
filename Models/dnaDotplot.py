@@ -9,12 +9,10 @@ class DNADotplot(Dotplot):
     def __init__(self, data: DotplotData):
         super().__init__(data)
 
-    def create(self):
-        if self._data.seq1.isValid() \
-                and self._data.seq2.isValid() \
-                and self._data.seq1.canBeMatchedWith(self._data.seq2):
+    def create(self) -> DotplotData:
+        if self._data.seq1.isValid() and self._data.seq2.isValid():
             self._data.dotplot = self.__matchSequences()
-            return self._data.dotplot
+            return self._data
         else:
             raise ValueError(self.__INVALID_SEQUENCE_ERROR_MSG)
 
