@@ -226,7 +226,7 @@ QHeaderView::section {
         <number>9</number>
        </property>
        <item row="0" column="0">
-        <widget class="QTableWidget" name="activeProcTableWidget">
+        <widget class="ActiveProcTableWidget" name="activeProcTableWidget">
          <property name="styleSheet">
           <string notr="true"/>
          </property>
@@ -927,6 +927,11 @@ QMenuBar::item:selected {
    <class>DragNDropListWidget</class>
    <extends>QListWidget</extends>
    <header>Views.dragNDropListWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>ActiveProcTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>Views.activeProcTableWidget</header>
   </customwidget>
  </customwidgets>
  <resources/>

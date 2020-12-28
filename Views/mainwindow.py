@@ -34,10 +34,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self._connectSlots()
-        self.ui.activeProcTableWidget.horizontalHeader().setSectionResizeMode( QHeaderView.Stretch)
         self._ledBlinking = {1: False, 2: False, 3: False}
         QTimer.singleShot(50, lambda: self.setDefaultIcons())
-        #self.setAcceptDrops(True)
 
     def changeEvent(self, event: QEvent) -> None:
         if self.windowState() == Qt.WindowMinimized:
@@ -45,16 +43,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         self.window_closed.emit()
-
-    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
-        # print("drag enter")
-        # self.drag_validation_needed.emit(event)
-        # event.acceptProposedAction()
-        print("main window drag enter")
-        pass
-
-    def dropEvent(self, event: QDropEvent) -> None:
-        print("main window drop event")
 
     def addSequences(self, seqIds: List[str]):
         for id in seqIds:
@@ -65,51 +53,12 @@ class MainWindow(QMainWindow):
         self._setLedStyleSheet(2, MainWindow.__IDLE_KEY)
         self._setLedStyleSheet(3, MainWindow.__IDLE_KEY)
 
-    def addProcess(self, id, pid, date, seq1id, seq2id, scoring: Scoring):
-        rowPosition = self.ui.activeProcTableWidget.rowCount()
-        self.ui.activeProcTableWidget.insertRow(rowPosition)
-        cols = self.ui.activeProcTableWidget.columnCount()
-        self.ui.activeProcTableWidget.setItem(rowPosition, 0, QTableWidgetItem(str(id)))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 1, QTableWidgetItem(str(pid)))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 2, QTableWidgetItem(str(date)))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 3, QTableWidgetItem(str(seq1id)))
-        self.ui.activeProcTableWidget.setItem(rowPosition, 4, QTableWidgetItem(str(seq2id)))
-        if scoring is not None:
-            self.ui.activeProcTableWidget.setItem(rowPosition, 5, QTableWidgetItem(str(scoring[Scoring.Keys.Match])))
-            self.ui.activeProcTableWidget.setItem(rowPosition, 6, QTableWidgetItem(str(scoring[Scoring.Keys.Mismatch])))
-            self.ui.activeProcTableWidget.setItem(rowPosition, 7, QTableWidgetItem(str(scoring[Scoring.Keys.Gap])))
-        else:
-            self.ui.activeProcTableWidget.setItem(rowPosition, 5, QTableWidgetItem("---"))
-            self.ui.activeProcTableWidget.setItem(rowPosition, 6, QTableWidgetItem("---"))
-            self.ui.activeProcTableWidget.setItem(rowPosition, 7, QTableWidgetItem("---"))
-        for i in range(7, cols):
-            self.ui.activeProcTableWidget.setItem(cols - 1, i, QTableWidgetItem(""))
-
-    def updateProcessData(self, id, cpu, mem):
-        row = self._rowOfProcessOfId(id)
-        if row >= 0:
-            self.ui.activeProcTableWidget.setItem(row, 8, QTableWidgetItem(f"{cpu:3.2}"))
-            self.ui.activeProcTableWidget.setItem(row, 9, QTableWidgetItem(f"{mem:3.2}"))
-
-    def removeProcess(self, id):
-        row = self._rowOfProcessOfId(id)
-        if row >= 0:
-            self.ui.activeProcTableWidget.removeRow(row)
-
-    def _rowOfProcessOfId(self, id):
-        for i in range(0, self.ui.activeProcTableWidget.rowCount()):
-            rowId = self.ui.activeProcTableWidget.item(i, 0).text()
-            if str(id) == rowId:
-                return i
-        return -1
-
     def _connectSlots(self):
         self.ui.selectSeqFirstBtn.clicked.connect(self._firstSeqSelected)
         self.ui.selectSeqSecBtn.clicked.connect(self._secSeqSelected)
         self.ui.fetchScoringBtn.clicked.connect(self._scoringSelected)
         self.ui.processBtn.clicked.connect(self._processBtnClicked)
         self.ui.seqFromNetAction.triggered.connect(self.fetch_seq_clicked)
-        self.ui.activeProcTableWidget.cellDoubleClicked.connect(self._processDoubleClicked)
 
     def _setLedStyleSheet(self, led, style):
         st = QPixmap()
@@ -201,9 +150,6 @@ class MainWindow(QMainWindow):
                 self.ui.seq1ListWidget.takeItem(index)
                 found = True
             index += 1
-
-    def _processDoubleClicked(self, row: int, column: int):
-        self.process_double_clicked.emit(int(self.ui.activeProcTableWidget.item(row, 0).text()))
 
 
 

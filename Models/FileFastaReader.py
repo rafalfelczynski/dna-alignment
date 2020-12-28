@@ -19,7 +19,7 @@ class FileFastaReader(QObject):
     def read(self, filePath: str) -> Sequence:
         if self.isValidFile(filePath):
             with open(filePath, "r", encoding="utf=8") as file:
-                identifier = file.readline().strip()[1:]
+                identifier = file.readline().strip()[1:].replace('"', '')
                 sequence = "".join(file.readlines()).replace("\n", "")
                 return Sequence(identifier, sequence)
         else:

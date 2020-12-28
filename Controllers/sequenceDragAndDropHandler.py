@@ -25,7 +25,8 @@ class SequenceDragAndDropHandler(DragAndDropHandler):
                 self.mainWindow.newSeqAvailable(seq.identifier)
             else:
                 rejectedSequences.append(seq.identifier)
-        self._showAccRejFilesAndSeqs(acceptedFiles, rejectedFiles, addedSequences, rejectedSequences)
+        if len(rejectedFiles) > 0 or len(rejectedSequences) > 0:
+            self._showAccRejFilesAndSeqs(acceptedFiles, rejectedFiles, addedSequences, rejectedSequences)
 
     def exportDraggedItem(self, item: str, sourceIdentifier: QObject):
         seq = self.seqDbReader.readSeq(item)

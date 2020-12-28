@@ -29,4 +29,9 @@ class Scoring:
     def __getitem__(self, key: 'Scoring.Keys'):
         return self._scoring[key]
 
+    def isValid(self):
+        return self.match is not None and isinstance(self.match, (int, float)) \
+               and self.mismatch is not None and isinstance(self.mismatch, (int, float)) \
+               and self.gap is not None and isinstance(self.gap, (int, float))
+
 

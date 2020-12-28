@@ -21,7 +21,6 @@ from Models.fileFastaReader import *
 from typing import List
 from Controllers.dndFileParser import DnDFileParser
 import resources.res
-from Models.mimeData import MimeData
 from Controllers.dndHandler import DragAndDropHandler
 from Controllers.sequenceDragAndDropHandler import SequenceDragAndDropHandler
 from Models.Database.seqDbUpdater import SeqDbUpdater
@@ -43,7 +42,7 @@ class Controller(QObject):
 
     __SYSTEM_TRAY_ICON = ":/dna_icon.png"
 
-    def __init__(self, procContr):
+    def __init__(self):
         super().__init__()
         self.mainWindow = MainWindow()
         self._networkManager = QNetworkAccessManager()
@@ -52,9 +51,10 @@ class Controller(QObject):
         self._internetConnectionChecker.startChecking()
         self._dbConnection = DBConnection()
         DatabaseCreator.createDatabase(self._dbConnection)
-        self.procContr: ProcessController = procContr
-        self.procContr.proc_infos.connect(self.procInfosReceived)
-        self.procContr.process_finished.connect(self.removeProcessFromList)
+        self.procContr: ProcessController = ProcessController(self.mainWindow.ui.activeProcTableWidget)
+        self.procContr.process_created.connect(self._releaseSelectedData)
+        # self.procContr.proc_infos.connect(self.procInfosReceived)
+        # self.procContr.process_finished.connect(self.removeProcessFromList)
         self.seqDbReader = SeqDBReader(self._dbConnection)
         self.seqDbWriter = SeqDBWriter(self._dbConnection)
         self.seqManager = SeqManager(self._networkManager, SeqDBReader(self._dbConnection), SeqDBWriter(self._dbConnection), SeqDbUpdater(self._dbConnection))
@@ -78,7 +78,7 @@ class Controller(QObject):
         self.mainWindow.alignment_process_clicked.connect(self.createAlignmentProcess)
         self.mainWindow.fetch_seq_clicked.connect(self._fetchFromInternetClicked)
         self.mainWindow.seq_selected.connect(self._seqSelected)
-        self.mainWindow.process_double_clicked.connect(self._processDoubleClicked)
+        # self.mainWindow.process_double_clicked.connect(self._processDoubleClicked)
         self.mainWindow.window_minimized.connect(self._foldToSystemTray)
         self.mainWindow.window_closed.connect(self._foldToSystemTray)
         self.mainWindow.ui.seq1ListWidget.item_dropped.connect(self._dndHandler.parseDroppedItems)
@@ -110,15 +110,11 @@ class Controller(QObject):
 
     def createDotplotProcess(self):
         if self._checkIfAllSelectedForDotplot():
-            if not self.procContr.procExists(self._selectedFirstSeq, self._selectedSecSeq):
-                procId = self.procContr.createDotplotProcess(self._selectedFirstSeq, self._selectedSecSeq)
-                self._createProcess(procId)
+            self.procContr.createDotplotProcess(self._selectedFirstSeq, self._selectedSecSeq)
 
     def createAlignmentProcess(self):
         if self._checkIfAllSelectedForAlignment():
-            if not self.procContr.procExists(self._selectedFirstSeq, self._selectedSecSeq, self._selectedScoring):
-                procId = self.procContr.createAlignmentProcess(self._selectedFirstSeq, self._selectedSecSeq, self._selectedScoring)
-                self._createProcess(procId)
+            self.procContr.createAlignmentProcess(self._selectedFirstSeq, self._selectedSecSeq, self._selectedScoring)
 
     def showInfoDialog(self, msg: str):
         dialog = InfoDialog()
@@ -143,23 +139,11 @@ class Controller(QObject):
             self.mainWindow.blinkLed(3)
         return seqOk and scoringOk
 
-    def _createProcess(self, procId):
-        if procId >= 0:
-            self.procContr.executeProcess(procId)
-            self.mainWindow.addProcess(procId, self.procContr.procPidFromId(procId), datetime.now(), self._selectedFirstSeq, self._selectedSecSeq, self._selectedScoring)
-            self._releaseSelectedData()
-
     def _releaseSelectedData(self):
         self._selectedScoring: Scoring = None
         self._selectedFirstSeq: str = None
         self._selectedSecSeq: str = None
         self.mainWindow.setDefaultIcons()
-
-    def procInfosReceived(self, processes: dict):
-        self.mainWindow.updateProcessData(processes["id"], processes["cpu"], processes["mem"])
-
-    def removeProcessFromList(self, id):
-        self.mainWindow.removeProcess(id)
 
     def validateScoring(self, match, mismatch, gap):
         isOk = isFloat(match) and isFloat(mismatch) and isFloat(gap)
@@ -178,13 +162,6 @@ class Controller(QObject):
             self._selectedFirstSeq = id
         elif seqNr == 2:
             self._selectedSecSeq = id
-
-    def _processDoubleClicked(self, id):
-        dialog = ConfirmDialog()
-        dialog.setText(f"Are you sure you want to kill the process with PID {self.procContr.procPidFromId(id)}?")
-        dialog.resize(300, 100)
-        dialog.accepted.connect(lambda: self.procContr.killProcess(id))
-        dialog.exec_()
 
     def _fetchFromInternetClicked(self):
         if self._internetConnectionChecker.isConnectionWorking():

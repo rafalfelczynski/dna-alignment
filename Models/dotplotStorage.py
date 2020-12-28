@@ -1,47 +1,81 @@
 import numpy as np
-from Models.dnaDotplot import DNADotplot
+import sys
+from io import BytesIO
 from Models.dnaSequence import DNASequence
-from Models.dotplot import Dotplot, DotplotData
+from Models.dotplot import Dotplot
+from Models.sequence import Sequence
 from PySide2.QtCore import QRegExp
 
 
-def store(filePath: str, dotplot: DotplotData):
+def dotplotMatrixToString(dotplot: Dotplot):
+    buffer = BytesIO()
+    np.savetxt(buffer, dotplot.dotplot, fmt="%d", encoding="utf-8", delimiter="")
+    return buffer.getvalue().decode("utf-8")
+
+
+def matrixToStr(matrix: np.ndarray):
+    string = ""
+    for i in range(0, matrix.shape[0]):
+        for j in range(0, matrix.shape[1]):
+            string += matrix[i, j]
+        string += "\n"
+    return string
+
+
+def storeMatrix(filePath: str, dotplot: Dotplot):
     with open(filePath, "w", encoding="utf-8") as dotplotFile:
         dotplotFile.write(dotplot.seq1.identifier+"\n")
         dotplotFile.write(dotplot.seq1.sequence+"\n")
         dotplotFile.write(dotplot.seq2.identifier+"\n")
         dotplotFile.write(dotplot.seq2.sequence+"\n")
-        dotplotFile.write(str(dotplot.dotplot))
-        #np.savetxt(dotplotFile, dotplot.dotplot, fmt="%c", encoding="utf-8", delimiter="")
-    pass
+        np.set_printoptions(threshold=sys.maxsize)
+        buffer = BytesIO()
+        np.savetxt(buffer, dotplot.dotplot, fmt="%d", encoding="utf-8", delimiter="")
+        dotplotFile.write(buffer.getvalue().decode("utf-8"))
 
 
-def __load(filePath: str):
+def storeIndexes(filePath: str, dotplot: Dotplot):
+    with open(filePath, "w", encoding="utf-8") as dotplotFile:
+        dotplotFile.write(dotplot.seq1.identifier+"\n")
+        dotplotFile.write(dotplot.seq1.sequence+"\n")
+        dotplotFile.write(dotplot.seq2.identifier+"\n")
+        dotplotFile.write(dotplot.seq2.sequence+"\n")
+        np.set_printoptions(threshold=sys.maxsize)
+        np.savetxt(dotplotFile, np.where(dotplot.dotplot.flatten() == 1), fmt="%d", encoding="utf-8", delimiter=" ")
+
+
+def loadMatrix(filePath: str):
     with open(filePath, "r") as dotplotFile:
         seq1id = dotplotFile.readline()[0:-1]  # [0:-1] because there is \n at the end of the line
         seq1sequence = dotplotFile.readline()[0:-1]
         seq2id = dotplotFile.readline()[0:-1]
         seq2sequence = dotplotFile.readline()[0:-1]
-        rows = len(seq1sequence)+1
-        columns = len(seq2sequence)+1
-        matrix = np.empty(shape=(rows, columns), dtype=str)
-        regex = QRegExp("('.')")
+        rows = len(seq1sequence)
+        columns = len(seq2sequence)
+        matrix = np.zeros(shape=(rows, columns))
         for i in range(0, rows):
-            line = dotplotFile.readline()[0:-1].replace("[", "").replace("]", "")
-            pos: int = 0
-            chars = []
-            while pos >= 0:
-                pos = regex.indexIn(line, pos)
-                if pos >= 0:
-                    chars.append(regex.cap(1))
-                    pos += regex.matchedLength()
-            matrix[i] = chars
-        return seq1id, seq1sequence, seq2id, seq2sequence, matrix
+            line = dotplotFile.readline()
+            for j in range(0, columns):
+                matrix[i, j] = line[j]
+        return Dotplot(Sequence(seq1id, seq1sequence), Sequence(seq2id, seq2sequence), matrix)
 
 
-def loadDNA(filePath: str):
-    seq1id, seq1sequence, seq2id, seq2sequence, matrix = __load(filePath)
-    dotplot = DNADotplot(DotplotData(DNASequence(seq1id, seq1sequence), DNASequence(seq2id, seq2sequence), matrix))
-    return dotplot
+def loadIndexes(filePath: str):
+    with open(filePath, "r") as dotplotFile:
+        seq1id = dotplotFile.readline()[0:-1]  # [0:-1] because there is \n at the end of the line
+        seq1sequence = dotplotFile.readline()[0:-1]
+        seq2id = dotplotFile.readline()[0:-1]
+        seq2sequence = dotplotFile.readline()[0:-1]
+        rows = len(seq1sequence)
+        columns = len(seq2sequence)
+        matrix = np.zeros(shape=(rows, columns))
+        lines = dotplotFile.readlines()
+        for line in lines:
+            indexes = line.split(" ")
+            for i in indexes:
+                i = int(i)
+                row = i//columns
+                matrix[row, i-row*columns] = 1
+        return Dotplot(Sequence(seq1id, seq1sequence), Sequence(seq2id, seq2sequence), matrix)
 
 

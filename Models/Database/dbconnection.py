@@ -20,7 +20,14 @@ class DBConnection(IDBConnection):
 
     def connect(self) -> bool:
         if not self.__isOpen():
-            return self.__connection.open()
+            isOpen = self.__connection.open()
+            query = self.createQuery("PRAGMA journal_mode = WAL;")
+            self.executeQuery(query)
+            query = self.createQuery("PRAGMA synchronous = NORMAL;")
+            self.executeQuery(query)
+            query = self.createQuery("PRAGMA foreign_keys = ON;")
+            self.executeQuery(query)
+            return isOpen
         else:
             return True
 

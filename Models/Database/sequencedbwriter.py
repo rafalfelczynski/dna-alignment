@@ -12,7 +12,9 @@ class SequenceDbWriter:
         sql = f"insert into {SequencesTableCreator.TABLE_NAME}({SequencesTableCreator.ID_COL_NAME}, {SequencesTableCreator.SEQ_COL_NAME}) values(?, ?)"
         query = self._conn.createQuery(sql)
         self.__bindQuery(query, seq)
-        return self._conn.executeQuery(query)
+        wasSuccessful = self._conn.executeQuery(query)
+        self._conn.close()
+        return wasSuccessful
 
     def __bindQuery(self, query: QSqlQuery, seq: Sequence):
         query.bindValue(0, seq.identifier)

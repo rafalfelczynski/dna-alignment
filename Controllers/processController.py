@@ -2,42 +2,59 @@ from Models.workerProcess import WorkerProcess
 from PySide2.QtCore import Signal, QTimer, QObject
 from Models.scoring import Scoring
 import psutil
+from datetime import datetime
+from Views.activeProcTableWidget import ActiveProcTableWidget
+from Views.confirmDialog import ConfirmDialog
+from Views.infoDialog import InfoDialog
 
 
 class ProcessController(QObject):
 
-    proc_infos = Signal(dict)
     process_finished = Signal(int)
+    process_created = Signal(int)
 
     __PROCESSES_POOL_SIZE = 4
     __TIMER_INTERVAL = 500
 
-    def __init__(self):
+    def __init__(self, processWidget):
         super().__init__()
         self._processes = dict()
         self._nextProcIndex = 0
         self._procPids = dict()
         self._psutilProcs = dict()
+        self._activeProcTableWidget: ActiveProcTableWidget = processWidget
+        self._activeProcTableWidget.proc_double_clicked.connect(self._processDoubleClicked)
         self._getProcInfoTimer = QTimer()
         self._getProcInfoTimer.timeout.connect(self.getProcInfo)
         self._getProcInfoTimer.start(ProcessController.__TIMER_INTERVAL)
 
     def createDotplotProcess(self, seq1Id, seq2Id):
-        return self._createProcess(f"python Models/dotplotProgram.py $$${str(seq1Id)}$$${str(seq2Id)}")
+        if not self.dotplotProcExists(seq1Id, seq2Id):
+            procId = self._createProcess(f"python Models/dotplotProgram.py $$${str(seq1Id)}$$${str(seq2Id)}")
+            if procId >= 0:
+                self._activeProcTableWidget.addProcess(procId, self.procPidFromId(procId), datetime.now(),
+                                seq1Id, seq2Id, None)
+            return procId
 
     def createAlignmentProcess(self, seq1Id, seq2Id, scoring):
-        return self._createProcess(f"python Models/alignmentProgram.py $$${str(seq1Id)}$$${str(seq2Id)}$$${scoring.match}$$${scoring.mismatch}$$${scoring.gap}")
+        if not self.alignmentProcExists(seq1Id, seq2Id, scoring):
+            procId = self._createProcess(f"python Models/alignmentProgram.py $$${str(seq1Id)}$$${str(seq2Id)}$$${scoring.match}$$${scoring.mismatch}$$${scoring.gap}")
+            if procId >= 0:
+                self._activeProcTableWidget.addProcess(procId, self.procPidFromId(procId), datetime.now(),
+                                seq1Id, seq2Id, scoring)
+            return procId
 
     def canCreate(self) -> bool:
-        if self._nextProcIndex in self._processes:
-            return False
-        else:
-            return True
-
-    def procExists(self, selectedFirstSeq: str, selectedSecSeq: str, selectedScoring: Scoring):
+        for i in range(0, self.__PROCESSES_POOL_SIZE):
+            if i not in self._processes:
+                self._nextProcIndex = i
+                return True
         return False
 
-    def procExists(self, selectedFirstSeq, selectedSecSeq):
+    def alignmentProcExists(self, selectedFirstSeq: str, selectedSecSeq: str, selectedScoring: Scoring):
+        return False
+
+    def dotplotProcExists(self, selectedFirstSeq, selectedSecSeq):
         return False
 
     def executeProcess(self, id):
@@ -67,13 +84,11 @@ class ProcessController(QObject):
             for pid in self._psutilProcs:
                 if psutil.pid_exists(pid):
                     proc: psutil.Process = self._psutilProcs[pid]
-                    info = dict()
-                    info["id"] = self._procIdFromPid(proc.pid)
-                    info["pid"] = proc.pid
-                    info["cpu"] = proc.cpu_percent()/psutil.cpu_count()
-                    info["status"] = proc.status()
-                    info["mem"] = proc.memory_percent()
-                    self.proc_infos.emit(info)
+                    id = self._procIdFromPid(proc.pid)
+                    cpu = proc.cpu_percent()/psutil.cpu_count()
+                    mem = proc.memory_percent()
+                    self._activeProcTableWidget.updateProcessData(id, proc.pid, cpu, mem)
+                    # self.proc_infos.emit(info)
         else:
             self._getProcInfoTimer.stop()
 
@@ -86,16 +101,20 @@ class ProcessController(QObject):
             proc.task_finished.connect(self._removeProcess)
             procId = self._nextProcIndex
             self._processes[procId] = proc
+            self._procPids[procId] = proc.pid()
             self._nextProcIndex = (self._nextProcIndex + 1) % ProcessController.__PROCESSES_POOL_SIZE
             self._getProcInfoTimer.start(ProcessController.__TIMER_INTERVAL)
+            self.process_created.emit(procId)
+            self.executeProcess(procId)
             return procId
 
     def _removeProcess(self, id):
-        print("task sie skonczył!!!!", id)
+        print("task sie skonczył!!!!", id, "remove process")
         if id in self._processes:
             self._processes.pop(id)
             self._procPids.pop(id)
-            self.process_finished.emit(id)
+            self._activeProcTableWidget.removeProcess(id)
+            # self.process_finished.emit(id)
 
     def _procIdFromPid(self, pid):
         for id in self._procPids:
@@ -103,10 +122,16 @@ class ProcessController(QObject):
                 return id
         return -1
 
-
-
-
-
+    def _processDoubleClicked(self, id: int):
+        try:
+            pid = self.procPidFromId(id)
+            dialog = ConfirmDialog()
+            dialog.setText(f"Are you sure you want to kill the process with PID {pid}?")
+            dialog.resize(300, 100)
+            dialog.accepted.connect(lambda: self.killProcess(id))
+            dialog.exec_()
+        except ValueError as e:
+            pass
 
 
 

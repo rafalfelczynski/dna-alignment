@@ -12,8 +12,8 @@ class Sequence:
         self.identifier: str = identifier
         self.sequence: str = sequence
 
-    def isNotEmpty(self):
-        return self.identifier and self.sequence
+    def isNotEmpty(self) -> bool:
+        return bool(self.identifier) and bool(self.sequence)
 
     def isValid(self):
         sequenceCopy = copy.deepcopy(self.sequence)

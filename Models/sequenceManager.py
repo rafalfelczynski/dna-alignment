@@ -43,7 +43,9 @@ class SeqManager(QObject):
 
     def removeSequence(self, seqId):
         dialog = ConfirmDialog()
-        dialog.setText(f"Are you sure you want to delete this sequence?\n Sequence Id: \n{seqId}")
+        dialog.setText(f"Are you sure you want to remove this sequence?\n"
+                       f"It will also REMOVE EVERY RELATED dotplot and alignment\n"
+                       f"Sequence Id: \n{seqId}")
         dialog.resize(400, 200)
         dialog.accepted.connect(lambda: self._removeSequenceFromDb(seqId))
         dialog.exec_()

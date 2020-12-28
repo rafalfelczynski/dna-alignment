@@ -11,7 +11,9 @@ class SequencesTableCreator:
         self.__conn: IDBConnection = dbconn
 
     def createTable(self):
-        sql = f"create table if not exists {self.TABLE_NAME}({self.ID_COL_NAME} text primary key, {self.SEQ_COL_NAME} text)"
+        sql = f"create table if not exists {self.TABLE_NAME}(" \
+              f"{self.ID_COL_NAME} text primary key," \
+              f" {self.SEQ_COL_NAME} text not null)"
         query = self.__conn.createQuery(sql)
         return self.__conn.executeQuery(query)
 

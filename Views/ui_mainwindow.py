@@ -13,6 +13,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from Views.dragNDropListWidget import DragNDropListWidget
+from Views.activeProcTableWidget import ActiveProcTableWidget
 
 
 class Ui_MainWindow(object):
@@ -169,7 +170,7 @@ class Ui_MainWindow(object):
         self.gridLayout_11 = QGridLayout(self.processesGroupBox)
         self.gridLayout_11.setObjectName(u"gridLayout_11")
         self.gridLayout_11.setContentsMargins(-1, 9, -1, -1)
-        self.activeProcTableWidget = QTableWidget(self.processesGroupBox)
+        self.activeProcTableWidget = ActiveProcTableWidget(self.processesGroupBox)
         if (self.activeProcTableWidget.columnCount() < 10):
             self.activeProcTableWidget.setColumnCount(10)
         __qtablewidgetitem = QTableWidgetItem()

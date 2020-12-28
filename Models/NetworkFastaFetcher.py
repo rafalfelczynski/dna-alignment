@@ -43,7 +43,7 @@ class NetworkFastaFetcher(QObject):
             identifier = ""
             sequence = ""
             if reply.isFinished() and reply.error() == QNetworkReply.NetworkError.NoError:
-                identifier = reply.readLine().data().decode().replace("\n", "")
+                identifier = reply.readLine().data().decode().replace("\n", "").replace('"', "")
                 sequence = reply.readAll().data().decode().replace("\n", "")
                 identifier, sequence = self.__validateFetchedData(identifier, sequence)
                 self.data_ready.emit(identifier, sequence)
