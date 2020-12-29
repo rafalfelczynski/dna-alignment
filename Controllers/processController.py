@@ -6,6 +6,8 @@ from datetime import datetime
 from Views.activeProcTableWidget import ActiveProcTableWidget
 from Views.confirmDialog import ConfirmDialog
 from Views.infoDialog import InfoDialog
+from Models.Database.alignmentReader import AlignmentReader
+from Models.Database.dotplotReader import DotplotReader
 
 
 class ProcessController(QObject):
@@ -16,7 +18,7 @@ class ProcessController(QObject):
     __PROCESSES_POOL_SIZE = 4
     __TIMER_INTERVAL = 500
 
-    def __init__(self, processWidget):
+    def __init__(self, processWidget, dotplotReader, alignmentReader):
         super().__init__()
         self._processes = dict()
         self._nextProcIndex = 0
@@ -27,22 +29,34 @@ class ProcessController(QObject):
         self._getProcInfoTimer = QTimer()
         self._getProcInfoTimer.timeout.connect(self.getProcInfo)
         self._getProcInfoTimer.start(ProcessController.__TIMER_INTERVAL)
+        self._dotplotReader: DotplotReader = dotplotReader
+        self._alignReader: AlignmentReader = alignmentReader
 
     def createDotplotProcess(self, seq1Id, seq2Id):
         if not self.dotplotProcExists(seq1Id, seq2Id):
             procId = self._createProcess(f"python Models/dotplotProgram.py $$${str(seq1Id)}$$${str(seq2Id)}")
             if procId >= 0:
-                self._activeProcTableWidget.addProcess(procId, self.procPidFromId(procId), datetime.now(),
-                                seq1Id, seq2Id, None)
+                self._activeProcTableWidget.addProcess(procId, self.procPidFromId(procId),
+                                                       datetime.now(), seq1Id, seq2Id, None)
             return procId
+        else:
+            dialog = InfoDialog()
+            dialog.setText("Dotplot already exists or is currently being created!")
+            dialog.resize(300, 200)
+            dialog.exec_()
 
     def createAlignmentProcess(self, seq1Id, seq2Id, scoring):
         if not self.alignmentProcExists(seq1Id, seq2Id, scoring):
             procId = self._createProcess(f"python Models/alignmentProgram.py $$${str(seq1Id)}$$${str(seq2Id)}$$${scoring.match}$$${scoring.mismatch}$$${scoring.gap}")
             if procId >= 0:
-                self._activeProcTableWidget.addProcess(procId, self.procPidFromId(procId), datetime.now(),
-                                seq1Id, seq2Id, scoring)
+                self._activeProcTableWidget.addProcess(procId, self.procPidFromId(procId),
+                                                       datetime.now(), seq1Id, seq2Id, scoring)
             return procId
+        else:
+            dialog = InfoDialog()
+            dialog.setText("Alignment already exists or is currently being created!")
+            dialog.resize(300, 200)
+            dialog.exec_()
 
     def canCreate(self) -> bool:
         for i in range(0, self.__PROCESSES_POOL_SIZE):
@@ -51,11 +65,13 @@ class ProcessController(QObject):
                 return True
         return False
 
-    def alignmentProcExists(self, selectedFirstSeq: str, selectedSecSeq: str, selectedScoring: Scoring):
-        return False
+    def alignmentProcExists(self, selectedFirstSeq, selectedSecSeq, selectedScoring):
+        exists = self._alignReader.checkIfExists(selectedFirstSeq, selectedSecSeq, selectedScoring)
+        return exists or self._activeProcTableWidget.checkIfProcExists(selectedFirstSeq, selectedSecSeq, selectedScoring)
 
     def dotplotProcExists(self, selectedFirstSeq, selectedSecSeq):
-        return False
+        exists = self._dotplotReader.checkIfExists(selectedFirstSeq, selectedSecSeq)
+        return exists or self._activeProcTableWidget.checkIfProcExists(selectedFirstSeq, selectedSecSeq, None)
 
     def executeProcess(self, id):
         if id in self._processes:
@@ -111,6 +127,8 @@ class ProcessController(QObject):
     def _removeProcess(self, id):
         print("task sie skonczył!!!!", id, "remove process")
         if id in self._processes:
+            pid = self._procPids[id]
+            self._psutilProcs.pop(pid)
             self._processes.pop(id)
             self._procPids.pop(id)
             self._activeProcTableWidget.removeProcess(id)

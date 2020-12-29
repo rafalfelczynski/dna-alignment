@@ -16,9 +16,19 @@ class Sequence:
         return bool(self.identifier) and bool(self.sequence)
 
     def isValid(self):
-        sequenceCopy = copy.deepcopy(self.sequence)
-        sequenceCopy = sequenceCopy.replace("A", "").replace("C", "").replace("G", "").replace("T", "")
-        return sequenceCopy == "" and self.isNotEmpty()
+        def countCharacters(ch):
+            nonlocal A, T, C, G
+            if ch == 'A':
+                A += 1
+            elif ch == 'T':
+                T += 1
+            elif ch == 'C':
+                C += 1
+            elif ch == 'G':
+                G += 1
+        A, T, C, G = 0, 0, 0, 0
+        [countCharacters(ch) for ch in self.sequence]
+        return self.isNotEmpty() and A+T+C+G == len(self.sequence)
 
     def cutSequenceIntoFragments(self, fragmLength):
         cutSequence = ""

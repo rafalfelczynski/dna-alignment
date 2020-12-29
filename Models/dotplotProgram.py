@@ -13,8 +13,6 @@ def splitArgs(args):
 
 if __name__ == "__main__":
     try:
-        while True:
-            pass
         args = splitArgs(sys.argv)
         if len(args) > 2:
             idSeq1 = args[1]

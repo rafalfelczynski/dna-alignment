@@ -33,7 +33,8 @@ class Alignment:
         return self._seq2Aligned
 
     def isValid(self):
-        return self._seq1 is not None and self._seq1.isValid() \
-               and self._seq2 is not None and self._seq2.isValid() \
-               and self._scoring is not None and self._scoring.isValid() \
-               and bool(self._seq1Aligned) and bool(self._seq2Aligned)
+        return self._seq1 is not None \
+               and self._seq2 is not None \
+               and self._scoring is not None \
+               and bool(self._seq1Aligned) \
+               and bool(self._seq2Aligned)

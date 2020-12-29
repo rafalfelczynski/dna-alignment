@@ -77,7 +77,7 @@ QPushButton {
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <signal>accepted()</signal>
+   <Signal>accepted()</Signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
    <hints>
@@ -93,7 +93,7 @@ QPushButton {
   </connection>
   <connection>
    <sender>buttonBox</sender>
-   <signal>rejected()</signal>
+   <Signal>rejected()</Signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>
    <hints>

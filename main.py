@@ -4,6 +4,7 @@ from Controllers.processController import *
 from Views.fileDropAcceptor import *
 from Models.Database.alignmentReader import AlignmentReader
 from Models.alignment import Alignment
+import numpy as np
 
 
 def main():

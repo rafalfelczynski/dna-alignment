@@ -12,9 +12,9 @@ class AlignmentDbReader:
     def __init__(self, dbConn: IDBConnection):
         self._conn = dbConn
 
-    def read(self, where=None, whereValues=None) -> List[Alignment]:
+    def readAlignment(self, where=None, whereValues=None) -> List[Alignment]:
         sql = f"select a.{AlignmentTableCreator.SEQ1_ID_COL_NAME}," \
-              f" a.{AlignmentTableCreator.SEQ2_COL_NAME}," \
+              f" a.{AlignmentTableCreator.SEQ2_ID_COL_NAME}," \
               f" a.{AlignmentTableCreator.MATCH_COL_NAME}," \
               f" a.{AlignmentTableCreator.MISMATCH_COL_NAME}," \
               f" a.{AlignmentTableCreator.GAP_COL_NAME}," \
@@ -43,13 +43,36 @@ class AlignmentDbReader:
                 alignments.append(self._parseAlignmentMap(alignmentMap))
         return alignments
 
+    def read(self, cols, where=None, whereValues=None) -> List[Dict[str, str]]:
+        sql = f"select {','.join(cols)}" \
+              f" from {AlignmentTableCreator.TABLE_NAME} a" \
+              f" inner join {SequencesTableCreator.TABLE_NAME} s" \
+              f" on a.{AlignmentTableCreator.SEQ1_ID_COL_NAME} = s.{SequencesTableCreator.ID_COL_NAME}" \
+              f" inner join {SequencesTableCreator.TABLE_NAME} s2" \
+              f" on a.{AlignmentTableCreator.SEQ1_ID_COL_NAME} = s2.{SequencesTableCreator.ID_COL_NAME}"
+        if where is not None and where != "":
+            sql += f" where {where}"
+        query = self._conn.createQuery(sql)
+        if where is not None and where != "":
+            self.__bindQuery(query, whereValues)
+        alignments = []
+        if self._conn.executeQuery(query):
+            while query.next():
+                alignmentMap = dict()
+                record = query.record()
+                for i in range(0, record.count()):
+                    field = record.field(i)
+                    alignmentMap[field.name()] = field.value()
+                alignments.append(alignmentMap)
+        return alignments
+
     def __bindQuery(self, query, whereValues):
         for i in range(0, len(whereValues)):
             query.bindValue(i, whereValues[i])
 
     def _parseAlignmentMap(self, align):
         seq1Id = align[AlignmentTableCreator.SEQ1_ID_COL_NAME]
-        seq2Id = align[AlignmentTableCreator.SEQ2_COL_NAME]
+        seq2Id = align[AlignmentTableCreator.SEQ2_ID_COL_NAME]
         seq1 = align["seq1"]
         seq2 = align["seq2"]
         seq1Aligned = align[AlignmentTableCreator.SEQ1_ALIGNED_COL_NAME]

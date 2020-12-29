@@ -123,7 +123,7 @@ QPushButton {
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <signal>accepted()</signal>
+   <Signal>accepted()</Signal>
    <receiver>NewSequence</receiver>
    <slot>accept()</slot>
    <hints>
@@ -139,7 +139,7 @@ QPushButton {
   </connection>
   <connection>
    <sender>buttonBox</sender>
-   <signal>rejected()</signal>
+   <Signal>rejected()</Signal>
    <receiver>NewSequence</receiver>
    <slot>reject()</slot>
    <hints>

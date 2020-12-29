@@ -10,7 +10,7 @@ class Dotplot:
     def __init__(self, seq1: Sequence, seq2: Sequence):
         self._seq1: Sequence = seq1
         self._seq2: Sequence = seq2
-        self._dotplot: np.ndarray = ...
+        self._dotplot: np.ndarray = None
 
     @property
     def seq1(self):
@@ -23,6 +23,11 @@ class Dotplot:
     @property
     def dotplot(self):
         return self._dotplot
+
+    def isValid(self):
+        return self._seq1 is not None \
+               and self._seq2 is not None \
+               and self._dotplot is not None
 
     def create(self) -> 'Dotplot':
         if self._seq1.isValid() and self._seq2.isValid():
@@ -42,11 +47,18 @@ class Dotplot:
 
     def matrixFromString(self, string: str, rows, columns):
         string = string.replace("\n", "")
+        if len(string) != rows*columns:
+            print("len", len(string), rows*columns, rows, columns)
+            raise ValueError("Rows, columns and string length don't match!")
         matrix = np.zeros(shape=(rows, columns), dtype=int)
         for i in range(0, rows):
             for j in range(0, columns):
                 matrix[i, j] = int(string[i*columns+j])
         self._dotplot = matrix
+
+    def mapToXY(self):
+        rows, cols = self.dotplot.nonzero()
+        return cols.tolist(), rows.tolist()
 
     def __matchSequences(self):
         seq1String: str = self._seq1.sequence

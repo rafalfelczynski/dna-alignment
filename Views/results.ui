@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ResultsWidget</class>
+ <widget class="QWidget" name="ResultsWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>642</width>
+    <height>561</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Results</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+	font: &quot;Times New Roman&quot;;
+    font-size: 14px;
+	color: white;
+}
+QLabel {
+	color: white;
+	font: italic &quot;Times New Roman&quot;;
+}
+QLineEdit {
+	border-radius: 8px;
+	border: 1px solid white;
+	background-color: #999999;
+	color: white;
+}
+
+
+QPushButton {
+    color: white;
+    border-radius: 12px;
+    border: 2px outset white;
+    background-color: qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1,
+    stop: 0 white,
+    stop: 0.3 gray,
+    stop: 0.6 gray,
+    stop: 0.9 darkgray,
+    stop: 1 black);
+    font-size: 14px;
+	font: bold &quot;Times New Roman&quot;;
+	height: 25px;
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1,
+    stop: 0 black,
+    stop: 0.3 darkgray,
+    stop: 0.6 gray,
+    stop: 0.8 gray,
+    stop: 1 white);
+}
+
+QPushButton:hover {
+	border: 4px solid green;
+}
+
+QListView {
+	background: transparent;
+}
+
+QTableWidget {
+	background: transparent;
+}
+
+QTabWidget {
+	background: transparent;
+	color: white;
+}
+
+QTabWidget::pane {
+	background: transparent;
+	color: white;
+}
+
+QTabBar::tab {
+	background-color: #333333;
+	color: white;
+}
+
+QTableWidget::item {
+	color: white;
+	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #6a6ea9, stop: 1 #888dd9);
+}
+
+QHeaderView::section {
+	background-color: #333333;
+	color: white;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="dotpGroupBox">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+	background: transparent;
+}</string>
+     </property>
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="title">
+      <string>Dotplots</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="DotplotsTableWidget" name="dotpTableWidget">
+        <property name="styleSheet">
+         <string notr="true">QTableWidget {
+	background: transparent;
+}
+
+QTableWidget::item {
+	color: white;
+	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #6a6ea9, stop: 1 #888dd9);
+}
+
+QHeaderView::section {
+	background-color: #333333;
+	color: white;
+}</string>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="columnCount">
+         <number>2</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>Sequence 1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Sequence 2</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="alignGroupBox">
+     <property name="styleSheet">
+      <string notr="true">QGroupBox {
+	background: transparent;
+}</string>
+     </property>
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="title">
+      <string>Alignments</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="AlignmentsTableWidget" name="alignTableWidget">
+        <property name="styleSheet">
+         <string notr="true">QTableWidget {
+	background: transparent;
+}
+
+QTableWidget::item {
+	color: white;
+	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #6a6ea9, stop: 1 #888dd9);
+}
+
+QHeaderView::section {
+	background-color: #333333;
+	color: white;
+}</string>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <column>
+         <property name="text">
+          <string>Sequence 1</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Sequence 2</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Match</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Mismatch</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Gap</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DotplotsTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>Views.dotplotsTableWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>AlignmentsTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>Views.alignmentsTableWidget</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

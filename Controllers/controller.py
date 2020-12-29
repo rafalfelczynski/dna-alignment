@@ -25,6 +25,10 @@ from Controllers.dndHandler import DragAndDropHandler
 from Controllers.sequenceDragAndDropHandler import SequenceDragAndDropHandler
 from Models.Database.seqDbUpdater import SeqDbUpdater
 from Controllers.netConnChecker import InternetConnectionChecker
+from Models.Database.dotplotReader import DotplotReader
+from Models.Database.alignmentReader import AlignmentReader
+from Views.resultsWidget import ResultsWidget
+from Controllers.resultsController import ResultsController
 
 
 def isFloat(num):
@@ -44,20 +48,25 @@ class Controller(QObject):
 
     def __init__(self):
         super().__init__()
+        self._dbConnection = DBConnection()
+        DatabaseCreator.createDatabase(self._dbConnection)
+        self._dotplotReader = DotplotReader(self._dbConnection)
+        self._alignReader = AlignmentReader(self._dbConnection)
+        self.seqDbReader = SeqDBReader(self._dbConnection)
+        self.seqDbWriter = SeqDBWriter(self._dbConnection)
         self.mainWindow = MainWindow()
+        self.parentDummy = QWidget()
+        self._centralWidgetMemory = ...
+        self.resultsWidget = ResultsWidget()
+        self.resultsController = ResultsController(self.resultsWidget, self._dotplotReader, self._alignReader)
+        self.operationWidget = self.mainWindow.centralWidget()
         self._networkManager = QNetworkAccessManager()
         self._internetConnectionChecker = InternetConnectionChecker(self._networkManager)
         self._internetConnectionChecker.setConnectionGraphicsView(self.mainWindow.ui.internetConnLbl)
         self._internetConnectionChecker.startChecking()
-        self._dbConnection = DBConnection()
-        DatabaseCreator.createDatabase(self._dbConnection)
-        self.procContr: ProcessController = ProcessController(self.mainWindow.ui.activeProcTableWidget)
+        self.procContr: ProcessController = ProcessController(self.mainWindow.ui.activeProcTableWidget, self._dotplotReader, self._alignReader)
         self.procContr.process_created.connect(self._releaseSelectedData)
-        # self.procContr.proc_infos.connect(self.procInfosReceived)
-        # self.procContr.process_finished.connect(self.removeProcessFromList)
-        self.seqDbReader = SeqDBReader(self._dbConnection)
-        self.seqDbWriter = SeqDBWriter(self._dbConnection)
-        self.seqManager = SeqManager(self._networkManager, SeqDBReader(self._dbConnection), SeqDBWriter(self._dbConnection), SeqDbUpdater(self._dbConnection))
+        self.seqManager = SeqManager(self._networkManager, self.seqDbReader, self.seqDbWriter, SeqDbUpdater(self._dbConnection))
         self.dialogContr = SeqDialogController(self.seqManager)
         self._dndHandler: DragAndDropHandler = SequenceDragAndDropHandler(self.mainWindow, self.seqDbReader, self.seqDbWriter)
         self.connectMainWindow()
@@ -78,7 +87,6 @@ class Controller(QObject):
         self.mainWindow.alignment_process_clicked.connect(self.createAlignmentProcess)
         self.mainWindow.fetch_seq_clicked.connect(self._fetchFromInternetClicked)
         self.mainWindow.seq_selected.connect(self._seqSelected)
-        # self.mainWindow.process_double_clicked.connect(self._processDoubleClicked)
         self.mainWindow.window_minimized.connect(self._foldToSystemTray)
         self.mainWindow.window_closed.connect(self._foldToSystemTray)
         self.mainWindow.ui.seq1ListWidget.item_dropped.connect(self._dndHandler.parseDroppedItems)
@@ -86,6 +94,8 @@ class Controller(QObject):
         self.mainWindow.ui.seq1ListWidget.item_double_clicked.connect(self.seqManager.showSequence)
         self.mainWindow.ui.seq1ListWidget.item_right_clicked.connect(self.seqManager.removeSequence)
         self.seqManager.seq_removed.connect(self.mainWindow.removeSequence)
+        self.mainWindow.ui.viewResultsAction.triggered.connect(self._resultsViewClicked)
+        self.mainWindow.ui.viewOperationAction.triggered.connect(self._operationViewClicked)
 
     def _createSystemTrayIcon(self):
         self._sysTrayIcon = QSystemTrayIcon()
@@ -183,7 +193,18 @@ class Controller(QObject):
 
     def _closeResourcesAndQuit(self):
         # Save data to database if needed, kill all running processes and quit
+        self._dbConnection.close()
         self.finished.emit()
+
+    def _resultsViewClicked(self):
+        if self.resultsWidget != self.mainWindow.centralWidget():
+            self.mainWindow.centralWidget().setParent(self.parentDummy)
+            self.mainWindow.setCentralWidget(self.resultsWidget)
+
+    def _operationViewClicked(self):
+        if self.operationWidget != self.mainWindow.centralWidget():
+            self.mainWindow.centralWidget().setParent(self.parentDummy)
+            self.mainWindow.setCentralWidget(self.operationWidget)
 
 
 

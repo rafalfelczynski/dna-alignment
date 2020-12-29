@@ -1,5 +1,7 @@
 from Models.Database.dotplotDbReader import *
 from Models.dotplot import Dotplot
+from Models.Database.seqTableCreator import SequencesTableCreator
+from Models.Database.dotplotTableCreator import DotplotTableCreator
 from typing import List
 
 
@@ -9,28 +11,38 @@ class DotplotReader:
         self._reader = DotplotDbReader(dbConn)
 
     def readDotplot(self, seq1Id, seq2Id) -> Dotplot:
-        recordMaps = self._reader.readDotplot(f"{DotplotTableCreator.SEQ1_COL_NAME} = ?"
+        dotplots = self._reader.readDotplot(f"{DotplotTableCreator.SEQ1_COL_NAME} = ?"
                                               f" and {DotplotTableCreator.SEQ2_COL_NAME} = ?", [seq1Id, seq2Id])
-        if len(recordMaps) > 0:
-            return self._parseRecordMap(recordMaps[0])
+        if len(dotplots) > 0:
+            return dotplots[0]
         return Dotplot(None, None)
 
+    # def readAllDotplots(self) -> List[Dotplot]:
+    #     recordMaps = self._reader.readAllDotplots([DotplotTableCreator.SEQ1_COL_NAME, DotplotTableCreator.SEQ2_COL_NAME], where=None, whereValues=None)
+    #     dotplots = []
+    #     for recordMap in recordMaps:
+    #         dotplots.append(self._parseRecordMap(recordMap))
+    #     print("all dotplots:", len(dotplots))
+    #     return dotplots
+
     def readAllDotplots(self) -> List[Dotplot]:
-        recordMaps = self._reader.readDotplot(where=None, whereValues=None)
+        columnsToRead = [DotplotTableCreator.SEQ1_COL_NAME, DotplotTableCreator.SEQ2_COL_NAME]
+        recordMaps = self._reader.read(columnsToRead, where=None, whereValues=None)
         dotplots = []
         for recordMap in recordMaps:
-            dotplots.append(self._parseRecordMap(recordMap))
+            values = self._parseRecordMap(recordMap, columnsToRead)
+            dotplots.append(Dotplot(Sequence(values[0], None), Sequence(values[1], None)))
         return dotplots
 
-    def _parseRecordMap(self, recordMap) -> Dotplot:
-        seq1Id = recordMap[DotplotTableCreator.SEQ1_COL_NAME]
-        seq2Id = recordMap[DotplotTableCreator.SEQ2_COL_NAME]
-        dotplotMatrix = recordMap[DotplotTableCreator.DOTPLOT_COL_NAME]
-        seq1 = recordMap[SequencesTableCreator.SEQ_COL_NAME]
-        seq2 = recordMap[SequencesTableCreator.SEQ_COL_NAME]
-        dotplot = Dotplot(Sequence(seq1Id, seq1), Sequence(seq2Id, seq2))
-        dotplot.matrixFromString(dotplotMatrix, len(seq1), len(seq2))
-        return dotplot
+    def checkIfExists(self, seq1Id, seq2Id):
+        columnsToRead = [DotplotTableCreator.SEQ1_COL_NAME, DotplotTableCreator.SEQ2_COL_NAME]
+        recordMaps = self._reader.read(columnsToRead, f"{DotplotTableCreator.SEQ1_COL_NAME} = ?"
+                                                      f" and {DotplotTableCreator.SEQ2_COL_NAME} = ?", [seq1Id, seq2Id])
+        return len(recordMaps) > 0
+
+    def _parseRecordMap(self, recordMap, cols) -> List[str]:
+        results = [recordMap[col] for col in cols]
+        return results
 
 
 

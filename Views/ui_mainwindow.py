@@ -31,18 +31,14 @@ class Ui_MainWindow(object):
 "	background-position: center;\n"
 "}")
         MainWindow.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
-        self.seqImportAction = QAction(MainWindow)
-        self.seqImportAction.setObjectName(u"seqImportAction")
         self.helpAboutAction = QAction(MainWindow)
         self.helpAboutAction.setObjectName(u"helpAboutAction")
-        self.scoringImportAction = QAction(MainWindow)
-        self.scoringImportAction.setObjectName(u"scoringImportAction")
-        self.resultsImportAction = QAction(MainWindow)
-        self.resultsImportAction.setObjectName(u"resultsImportAction")
-        self.resultsShowAction = QAction(MainWindow)
-        self.resultsShowAction.setObjectName(u"resultsShowAction")
+        self.viewOperationAction = QAction(MainWindow)
+        self.viewOperationAction.setObjectName(u"viewOperationAction")
         self.seqFromNetAction = QAction(MainWindow)
         self.seqFromNetAction.setObjectName(u"seqFromNetAction")
+        self.viewResultsAction = QAction(MainWindow)
+        self.viewResultsAction.setObjectName(u"viewResultsAction")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setFocusPolicy(Qt.NoFocus)
@@ -98,6 +94,16 @@ class Ui_MainWindow(object):
 "\n"
 "QTableWidget {\n"
 "	background: transparent;\n"
+"}\n"
+"\n"
+"QTabWidget {\n"
+"	background: transparent;\n"
+"	color: white;\n"
+"}\n"
+"\n"
+"QTabBar::tab {\n"
+"	background-color: #333333;\n"
+"	color: white;\n"
 "}\n"
 "\n"
 "QTableWidget::item {\n"
@@ -477,8 +483,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
         self.menuSequence.addAction(self.seqFromNetAction)
         self.menuHelp.addAction(self.helpAboutAction)
-        self.menuResults.addAction(self.resultsImportAction)
-        self.menuResults.addAction(self.resultsShowAction)
+        self.menuResults.addAction(self.viewOperationAction)
+        self.menuResults.addAction(self.viewResultsAction)
 
         self.retranslateUi(MainWindow)
 
@@ -487,12 +493,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.seqImportAction.setText(QCoreApplication.translate("MainWindow", u"Import", None))
         self.helpAboutAction.setText(QCoreApplication.translate("MainWindow", u"About...", None))
-        self.scoringImportAction.setText(QCoreApplication.translate("MainWindow", u"Import", None))
-        self.resultsImportAction.setText(QCoreApplication.translate("MainWindow", u"Import", None))
-        self.resultsShowAction.setText(QCoreApplication.translate("MainWindow", u"Show", None))
+        self.viewOperationAction.setText(QCoreApplication.translate("MainWindow", u"Operation", None))
         self.seqFromNetAction.setText(QCoreApplication.translate("MainWindow", u"Get from the Internet", None))
+        self.viewResultsAction.setText(QCoreApplication.translate("MainWindow", u"Results", None))
         self.operationGroupBox.setTitle(QCoreApplication.translate("MainWindow", u"Operation", None))
         self.processBtn.setText(QCoreApplication.translate("MainWindow", u"Process", None))
         self.dotplotRadioBtn.setText(QCoreApplication.translate("MainWindow", u"Dotplot", None))
@@ -540,6 +544,6 @@ class Ui_MainWindow(object):
         self.fetchScoringBtn.setText(QCoreApplication.translate("MainWindow", u"Select", None))
         self.menuSequence.setTitle(QCoreApplication.translate("MainWindow", u"Sequence", None))
         self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
-        self.menuResults.setTitle(QCoreApplication.translate("MainWindow", u"Results", None))
+        self.menuResults.setTitle(QCoreApplication.translate("MainWindow", u"View", None))
     # retranslateUi
 
