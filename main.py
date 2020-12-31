@@ -1,17 +1,11 @@
 import sys
-from Controllers.controller import *
-from Controllers.processController import *
-from Views.fileDropAcceptor import *
-from Models.Database.alignmentReader import AlignmentReader
-from Models.alignment import Alignment
-import numpy as np
+from PySide2.QtWidgets import QApplication
+from Controllers.controller import Controller
 
 
 def main():
-    # con = DBConnection()
-    # a = AlignmentReader(con)
-    # ali = a.readAllAlignments()
     app = QApplication([])
+    app.setApplicationName("DNA Alignment")
     app.setQuitOnLastWindowClosed(False)
     contr = Controller()
     contr.finished.connect(app.quit)

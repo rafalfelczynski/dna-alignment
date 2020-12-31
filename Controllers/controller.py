@@ -1,34 +1,30 @@
-from PySide2.QtGui import QIcon, QDragEnterEvent, QDrag, QPixmap
-from PySide2.QtWidgets import *
-from PySide2.QtCore import *
-from Views.mainwindow import MainWindow
-from Controllers.processController import ProcessController
-from datetime import datetime
-from Controllers.seqDialogController import SeqDialogController
-from Models.sequenceManager import SeqManager
-from Models.Database.seqReader import SeqDBReader
-from Models.Database.seqTableCreator import SequencesTableCreator
-from Models.Database.seqDbWriter import SeqDBWriter
-from Models.Database.dbconnection import DBConnection
+from PySide2.QtGui import QIcon
 from PySide2.QtNetwork import QNetworkAccessManager
-from Models.scoring import Scoring
-from Models.Database.databaseCreator import DatabaseCreator
-from Views.infoDialog import InfoDialog
-from Views.confirmDialog import ConfirmDialog
-from PySide2.QtCore import Signal
-from Views.autoPosMenu import AutoPosMenu
-from Models.fileFastaReader import *
-from typing import List
-from Controllers.dndFileParser import DnDFileParser
-import resources.res
+from PySide2.QtWidgets import *
+
+from Controllers.alignmentDndHandler import AlignmentDndHandler
 from Controllers.dndHandler import DragAndDropHandler
-from Controllers.sequenceDragAndDropHandler import SequenceDragAndDropHandler
-from Models.Database.seqDbUpdater import SeqDbUpdater
 from Controllers.netConnChecker import InternetConnectionChecker
-from Models.Database.dotplotReader import DotplotReader
-from Models.Database.alignmentReader import AlignmentReader
-from Views.resultsWidget import ResultsWidget
+from Controllers.processController import ProcessController
 from Controllers.resultsController import ResultsController
+from Controllers.seqDialogController import SeqDialogController
+from Controllers.sequenceDragAndDropHandler import SequenceDragAndDropHandler
+from Models.Database.alignmentReader import AlignmentReader
+from Models.Database.databaseCreator import DatabaseCreator
+from Models.Database.dbconnection import DBConnection
+from Models.Database.dotplotReader import DotplotReader
+from Models.Database.seqDbUpdater import SeqDbUpdater
+from Models.Database.seqDbWriter import SeqDBWriter
+from Models.Database.seqReader import SeqDBReader
+from Models.Database.alignmentDbDeleter import AlignmentDbDeleter
+from Models.Database.dotplotDbDeleter import DotplotDbDeleter
+from Models.fileFastaReader import *
+from Models.scoring import Scoring
+from Models.sequenceManager import SeqManager
+from Views.autoPosMenu import AutoPosMenu
+from Views.infoDialog import InfoDialog
+from Views.mainwindow import MainWindow
+from Views.resultsWidget import ResultsWidget
 
 
 def isFloat(num):
@@ -52,13 +48,18 @@ class Controller(QObject):
         DatabaseCreator.createDatabase(self._dbConnection)
         self._dotplotReader = DotplotReader(self._dbConnection)
         self._alignReader = AlignmentReader(self._dbConnection)
+        self._alignDeleter = AlignmentDbDeleter(self._dbConnection)
+        self._dotpDeleter = DotplotDbDeleter(self._dbConnection)
         self.seqDbReader = SeqDBReader(self._dbConnection)
         self.seqDbWriter = SeqDBWriter(self._dbConnection)
         self.mainWindow = MainWindow()
         self.parentDummy = QWidget()
         self._centralWidgetMemory = ...
         self.resultsWidget = ResultsWidget()
-        self.resultsController = ResultsController(self.resultsWidget, self._dotplotReader, self._alignReader)
+        self.resultsController = ResultsController(self.resultsWidget, self._dotplotReader, self._alignReader,
+                                                   self._dotpDeleter, self._alignDeleter,
+                                                   AlignmentDndHandler(self._alignReader))
+        self.resultsController.screenshot_saved.connect(self._displaySystemTrayMessage)
         self.operationWidget = self.mainWindow.centralWidget()
         self._networkManager = QNetworkAccessManager()
         self._internetConnectionChecker = InternetConnectionChecker(self._networkManager)
@@ -66,6 +67,7 @@ class Controller(QObject):
         self._internetConnectionChecker.startChecking()
         self.procContr: ProcessController = ProcessController(self.mainWindow.ui.activeProcTableWidget, self._dotplotReader, self._alignReader)
         self.procContr.process_created.connect(self._releaseSelectedData)
+        self.procContr.process_finished.connect(self._processFinished)
         self.seqManager = SeqManager(self._networkManager, self.seqDbReader, self.seqDbWriter, SeqDbUpdater(self._dbConnection))
         self.dialogContr = SeqDialogController(self.seqManager)
         self._dndHandler: DragAndDropHandler = SequenceDragAndDropHandler(self.mainWindow, self.seqDbReader, self.seqDbWriter)
@@ -96,6 +98,7 @@ class Controller(QObject):
         self.seqManager.seq_removed.connect(self.mainWindow.removeSequence)
         self.mainWindow.ui.viewResultsAction.triggered.connect(self._resultsViewClicked)
         self.mainWindow.ui.viewOperationAction.triggered.connect(self._operationViewClicked)
+        self.mainWindow.ui.helpAboutAction.triggered.connect(self._showHelpInfoDialog)
 
     def _createSystemTrayIcon(self):
         self._sysTrayIcon = QSystemTrayIcon()
@@ -115,6 +118,9 @@ class Controller(QObject):
         if reason == QSystemTrayIcon.DoubleClick:
             self._restoreFromSystemTray()
 
+    def _displaySystemTrayMessage(self, title, msg):
+        self._sysTrayIcon.showMessage(title, msg, msecs=500)
+
     def connectSeqManager(self):
         self.seqManager.new_seq_available.connect(self.mainWindow.newSeqAvailable)
 
@@ -126,8 +132,9 @@ class Controller(QObject):
         if self._checkIfAllSelectedForAlignment():
             self.procContr.createAlignmentProcess(self._selectedFirstSeq, self._selectedSecSeq, self._selectedScoring)
 
-    def showInfoDialog(self, msg: str):
+    def showInfoDialog(self, msg: str, width, height):
         dialog = InfoDialog()
+        dialog.resize(width, height)
         dialog.setText(msg)
         dialog.exec_()
 
@@ -192,9 +199,10 @@ class Controller(QObject):
         self._internetConnectionChecker.startChecking()
 
     def _closeResourcesAndQuit(self):
-        # Save data to database if needed, kill all running processes and quit
         self._dbConnection.close()
+        self.procContr.killAll()
         self.finished.emit()
+
 
     def _resultsViewClicked(self):
         if self.resultsWidget != self.mainWindow.centralWidget():
@@ -205,6 +213,48 @@ class Controller(QObject):
         if self.operationWidget != self.mainWindow.centralWidget():
             self.mainWindow.centralWidget().setParent(self.parentDummy)
             self.mainWindow.setCentralWidget(self.operationWidget)
+
+    def _processFinished(self, id):
+        if self.mainWindow.isMinimized():
+            self._displaySystemTrayMessage("Process finished", "One of your tasks have just finished processing")
+
+    def _showHelpInfoDialog(self):
+        msg = "This application allows you to create a Dotplot and an Alignment from any 2 of the DNA sequences.\n" \
+              "You can fetch sequence from the Internet by clicking a button in top-left corner or " \
+              'you can simply drag and drop files onto "Sequences" area.' \
+              " If you don't have the internet connection enabled, you will se a blue wifi icon with red cross on it" \
+              "and you won't be able to fetch any sequence from the internet.\n" \
+              'Dropped file has to contain a sequence in fasta format, which means it has to have some sort of' \
+              ' identifier following ">" character.' \
+              ' After the identifier and space character there may be some comments.' \
+              ' Starting from the new line there should be appropriate sequence and it can occupy multiple lines.\n' \
+              'You can also copy the sequence onto your computer byt dragging it and dropping onto you system files. ' \
+              'It will be saved in fasta format. ' \
+              'If some sequences have been obtained, you can select two sequences to create a Dotplot or an Alignment.' \
+              'After selecting each sequence, the related led should indicate successful selection.' \
+              'To create a Dotplot you need only 2 sequences but to make an Alignment, you also need to define a scoring,' \
+              ' that will be used to calculate the alignment. Different scoring values can produce different results.' \
+              'Type in the values you want in proper fields and click "Select" button.\n' \
+              'Dotplot or alignment processing can be time consuming and CPU expensive,' \
+              ' so you can create up to 4 different operations independently. ' \
+              'Each operation is then represented as a running process which can be stopped (killed) by double clicking it in table.' \
+              ' You can minimize or close the window without any risks. App will be still running in the background' \
+              ' and can be restored by double clicking the app icon in your system tray.' \
+              ' After the operation finishes successfully and the app is minimized,' \
+              ' you will be notified about it if you have system notifications enabled.\n' \
+              'You can check any of the obtained results by changing the View to "Results" by clicking ' \
+              'an appropriate button on the app menu.\n' \
+              'If already in the results view, you can double click a dotplot or an alignment to see the proper results.' \
+              'If you select a Dotplot, it will be open in separate window, ' \
+              'where you can drag the chart or zoom in and out to see more details. ' \
+              'By pressing the SPACE on your keyboard, you can make a snapshot of' \
+              ' currently selected fragment of the chart to analyze it later.\n' \
+              'Images are stored in the directory: <user>/Documents/alignment/' \
+              'Alignments can be copied from the Application onto your computer machine by simply selecting a row and' \
+              ' dragging it onto yor system files. ' \
+              'The generated file will also contain some simple analysis of the alignment.' \
+              '\n\nContact to the author: Rafał Felczyński, 236809@student.pwr.edu.pl'
+        self.showInfoDialog(msg, 600, 400)
 
 
 

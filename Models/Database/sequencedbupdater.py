@@ -1,4 +1,3 @@
-from Models.Database.idbconnection import *
 from Models.Database.seqTableCreator import *
 
 

@@ -1,8 +1,6 @@
-from Models.Database.idbconnection import *
-from Models.sequence import Sequence
 from typing import List, Dict
+
 from Models.Database.seqTableCreator import *
-from Models.dnaSequence import DNASequence
 
 
 class SequenceDbReader:
@@ -21,7 +19,8 @@ class SequenceDbReader:
                 record = query.record()
                 seqMap = dict()
                 for i in range(0, record.count()):
-                    self.mapColToSequenceField(record.field(i), seqMap)
+                    field = record.field(i)
+                    seqMap[field.name()] = field.value()
                 seqs.append(seqMap)
         self._conn.close()
         return seqs
@@ -41,13 +40,6 @@ class SequenceDbReader:
     def __bindQuery(self, query, cols):
         for i in range(0, len(cols)):
             query.bindValue(i, cols[i])
-
-    @classmethod
-    def mapColToSequenceField(cls, col, seqMap: dict):
-        if col.name() == SequencesTableCreator.ID_COL_NAME:
-            seqMap[SequencesTableCreator.ID_COL_NAME] = col.value()
-        elif col.name() == SequencesTableCreator.SEQ_COL_NAME:
-            seqMap[SequencesTableCreator.SEQ_COL_NAME] = col.value()
 
 
 

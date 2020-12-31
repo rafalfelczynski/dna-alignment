@@ -1,4 +1,4 @@
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
+from PySide2.QtSql import QSqlQuery
 
 
 class IDBConnection:

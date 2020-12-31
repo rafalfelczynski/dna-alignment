@@ -120,13 +120,19 @@ class Ui_ResultsWidget(object):
         __qtablewidgetitem1 = QTableWidgetItem()
         self.dotpTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         self.dotpTableWidget.setObjectName(u"dotpTableWidget")
+        self.dotpTableWidget.setFocusPolicy(Qt.NoFocus)
         self.dotpTableWidget.setStyleSheet(u"QTableWidget {\n"
 "	background: transparent;\n"
 "}\n"
 "\n"
 "QTableWidget::item {\n"
 "	color: white;\n"
-"	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"	background-color: rgba(179, 179, 179, 102);\n"
+"}\n"
+"\n"
+"QTableWidget::item:selected {\n"
+"	color: white;\n"
+"	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
 "}\n"
 "\n"
@@ -137,6 +143,9 @@ class Ui_ResultsWidget(object):
         self.dotpTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.dotpTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.dotpTableWidget.setColumnCount(2)
+        self.dotpTableWidget.horizontalHeader().setHighlightSections(False)
+        self.dotpTableWidget.verticalHeader().setVisible(False)
+        self.dotpTableWidget.verticalHeader().setHighlightSections(False)
 
         self.gridLayout.addWidget(self.dotpTableWidget, 0, 0, 1, 1)
 
@@ -166,13 +175,19 @@ class Ui_ResultsWidget(object):
         __qtablewidgetitem6 = QTableWidgetItem()
         self.alignTableWidget.setHorizontalHeaderItem(4, __qtablewidgetitem6)
         self.alignTableWidget.setObjectName(u"alignTableWidget")
+        self.alignTableWidget.setFocusPolicy(Qt.NoFocus)
         self.alignTableWidget.setStyleSheet(u"QTableWidget {\n"
 "	background: transparent;\n"
 "}\n"
 "\n"
 "QTableWidget::item {\n"
 "	color: white;\n"
-"	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"	background-color: rgba(179, 179, 179, 102);\n"
+"}\n"
+"\n"
+"QTableWidget::item:selected {\n"
+"	color: white;\n"
+"	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
 "                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
 "}\n"
 "\n"
@@ -182,6 +197,9 @@ class Ui_ResultsWidget(object):
 "}")
         self.alignTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.alignTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.alignTableWidget.horizontalHeader().setHighlightSections(False)
+        self.alignTableWidget.verticalHeader().setVisible(False)
+        self.alignTableWidget.verticalHeader().setHighlightSections(False)
 
         self.verticalLayout_3.addWidget(self.alignTableWidget)
 

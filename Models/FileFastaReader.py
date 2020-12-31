@@ -1,5 +1,6 @@
 from PySide2.QtCore import QFile, Signal, QObject, QRegExp
-from Models.sequence import Sequence, NotValidSequenceException
+
+from Models.sequence import Sequence
 
 
 class NotAFastaFileException(Exception):
@@ -20,8 +21,11 @@ class FileFastaReader(QObject):
         if self.isValidFile(filePath):
             with open(filePath, "r", encoding="utf=8") as file:
                 identifier = file.readline().strip()[1:].replace('"', '')
+                identifierParts = identifier.split(" ")
+                identifier = identifierParts[0]
+                comment = " ".join(identifierParts[1:])
                 sequence = "".join(file.readlines()).replace("\n", "")
-                return Sequence(identifier, sequence)
+                return Sequence(identifier, sequence, comment)
         else:
             return None
 

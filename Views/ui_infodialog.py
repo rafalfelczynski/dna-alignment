@@ -63,6 +63,7 @@ class Ui_Dialog(object):
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setEnabled(True)
         font = QFont()
+        font.setFamily(u"Consolas")
         font.setPointSize(10)
         self.textEdit.setFont(font)
         self.textEdit.setFocusPolicy(Qt.ClickFocus)

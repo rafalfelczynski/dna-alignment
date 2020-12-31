@@ -21,12 +21,14 @@ class AlignmentDbReader:
               f" a.{AlignmentTableCreator.SEQ1_ALIGNED_COL_NAME}," \
               f" a.{AlignmentTableCreator.SEQ2_ALIGNED_COL_NAME}," \
               f" s.{SequencesTableCreator.SEQ_COL_NAME} as seq1," \
-              f" s2.{SequencesTableCreator.SEQ_COL_NAME} as seq2" \
+              f" s2.{SequencesTableCreator.SEQ_COL_NAME} as seq2," \
+              f" s.{SequencesTableCreator.COMMENT_COL_NAME} as comm1," \
+              f" s2.{SequencesTableCreator.COMMENT_COL_NAME} as comm2" \
               f" from {AlignmentTableCreator.TABLE_NAME} a" \
               f" inner join {SequencesTableCreator.TABLE_NAME} s" \
               f" on a.{AlignmentTableCreator.SEQ1_ID_COL_NAME} = s.{SequencesTableCreator.ID_COL_NAME}" \
               f" inner join {SequencesTableCreator.TABLE_NAME} s2" \
-              f" on a.{AlignmentTableCreator.SEQ1_ID_COL_NAME} = s2.{SequencesTableCreator.ID_COL_NAME}"
+              f" on a.{AlignmentTableCreator.SEQ2_ID_COL_NAME} = s2.{SequencesTableCreator.ID_COL_NAME}"
         if where is not None and where != "":
             sql += f" where {where}"
         query = self._conn.createQuery(sql)
@@ -74,13 +76,16 @@ class AlignmentDbReader:
         seq1Id = align[AlignmentTableCreator.SEQ1_ID_COL_NAME]
         seq2Id = align[AlignmentTableCreator.SEQ2_ID_COL_NAME]
         seq1 = align["seq1"]
+        comm1 = align["comm1"]
         seq2 = align["seq2"]
+        comm2 = align["comm2"]
         seq1Aligned = align[AlignmentTableCreator.SEQ1_ALIGNED_COL_NAME]
         seq2Aligned = align[AlignmentTableCreator.SEQ2_ALIGNED_COL_NAME]
         match = float(align[AlignmentTableCreator.MATCH_COL_NAME])
         mismatch = float(align[AlignmentTableCreator.MISMATCH_COL_NAME])
         gap = float(align[AlignmentTableCreator.GAP_COL_NAME])
-        alignment = Alignment(Sequence(seq1Id, seq1), Sequence(seq2Id, seq2), Scoring(match, mismatch, gap), seq1Aligned, seq2Aligned)
+        alignment = Alignment(Sequence(seq1Id, seq1, comm1), Sequence(seq2Id, seq2, comm2),
+                              Scoring(match, mismatch, gap), seq1Aligned, seq2Aligned)
         return alignment
 
 

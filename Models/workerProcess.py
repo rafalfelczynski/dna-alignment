@@ -13,12 +13,10 @@ class WorkerProcess(QProcess):
 
     def exec(self):
         super().start(self._command)
-        pass
 
     def finishedTask(self):
-        # Save to database!
         self.task_finished.emit(self._id)
-        pass
+
 
 
 

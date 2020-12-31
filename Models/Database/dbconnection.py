@@ -1,4 +1,5 @@
 from Models.Database.idbconnection import *
+from PySide2.QtSql import QSqlDatabase
 
 
 class DBException(Exception):

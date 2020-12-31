@@ -101,6 +101,6 @@ class Ui_NewSequence(object):
 
     def retranslateUi(self, NewSequence):
         NewSequence.setWindowTitle(QCoreApplication.translate("NewSequence", u"New Sequence", None))
-        self.label.setText(QCoreApplication.translate("NewSequence", u"Insert identifier", None))
+        self.label.setText(QCoreApplication.translate("NewSequence", u"Insert identifier or alias", None))
     # retranslateUi
 

@@ -1,10 +1,10 @@
-from Models.Database.sequencedbreader import SequenceDbReader
+from typing import List, Dict
+
+from Models.Database.dotplotTableCreator import DotplotTableCreator
 from Models.Database.idbconnection import IDBConnection
 from Models.Database.seqTableCreator import SequencesTableCreator
-from Models.Database.dotplotTableCreator import DotplotTableCreator
-from typing import List, Dict
-from Models.sequence import Sequence
 from Models.dotplot import Dotplot
+from Models.sequence import Sequence
 
 
 class DotplotDbReader:

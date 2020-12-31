@@ -1,9 +1,6 @@
-from Views.ui_mainwindow import *
 from typing import List
-from Models.scoring import Scoring
-from PySide2.QtGui import *
-from PySide2.QtCore import *
-from PySide2.QtWidgets import *
+
+from Views.ui_mainwindow import *
 import resources.res
 
 
@@ -27,12 +24,12 @@ class MainWindow(QMainWindow):
     __LED_IDLE_STYLESHEET = ":/orange_led.png"
     __WRONG_KEY = "wrong"
     __LED_WRONG_STYLESHEET = ":/red_led.png"
-    __SELECT_BTN_ICON_PATH = ":/select_btn.png"
 
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowTitle("Alignment")
         self._connectSlots()
         self._ledBlinking = {1: False, 2: False, 3: False}
         QTimer.singleShot(50, lambda: self.setDefaultIcons())

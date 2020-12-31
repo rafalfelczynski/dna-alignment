@@ -1,7 +1,5 @@
-from Models.Database.idbconnection import IDBConnection
-from PySide2.QtSql import QSqlQuery
-from Models.dotplot import Dotplot
 from Models.Database.dotplotTableCreator import *
+from Models.dotplot import Dotplot
 
 
 class DotplotDBWriter:

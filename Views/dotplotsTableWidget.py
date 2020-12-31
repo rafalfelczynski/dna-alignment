@@ -9,11 +9,21 @@ from Models.sequence import Sequence
 class DotplotsTableWidget(QTableWidget):
 
     dotplot_double_clicked = Signal(Dotplot)
+    item_right_clicked = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.cellDoubleClicked.connect(self._dotplotDoubleClicked)
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.RightButton:
+            item = self.itemAt(event.pos())
+            if item is not None:
+                seq1Id = self.item(item.row(), 0).text()
+                seq2Id = self.item(item.row(), 1).text()
+                self.item_right_clicked.emit(f"{seq1Id}$$${seq2Id}")
+        super().mousePressEvent(event)
 
     def refreshData(self, dotplots: List[Dotplot]) -> None:
         for i in range(self.rowCount()-1, -1, -1):

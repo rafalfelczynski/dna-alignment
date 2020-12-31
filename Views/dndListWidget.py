@@ -16,7 +16,7 @@ class Identifier(QObject):
         return not self == other
 
 
-class DragNDropListWidget(QListWidget):
+class DndListWidget(QListWidget):
     __START_DRAG_DISTANCE = 30
     __DRAG_SOURCE_IDENTIFIER: QObject = Identifier(1)
     item_dragged = Signal(str, QObject)
@@ -45,7 +45,7 @@ class DragNDropListWidget(QListWidget):
             self.item_double_clicked.emit(seqId)
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
-        if event.source() is None or (event.source() != DragNDropListWidget.__DRAG_SOURCE_IDENTIFIER):
+        if event.source() is None or (event.source() != DndListWidget.__DRAG_SOURCE_IDENTIFIER):
             event.acceptProposedAction()
 
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
@@ -60,7 +60,7 @@ class DragNDropListWidget(QListWidget):
             if (event.pos() - self._dragStartPos).manhattanLength() > self.__START_DRAG_DISTANCE:
                 item = self.convertDraggedItemToString()
                 if item:
-                    self.item_dragged.emit(item, DragNDropListWidget.__DRAG_SOURCE_IDENTIFIER)
+                    self.item_dragged.emit(item, DndListWidget.__DRAG_SOURCE_IDENTIFIER)
 
     def convertDraggedItemToString(self) -> str:
         item = self.itemAt(self._dragStartPos)

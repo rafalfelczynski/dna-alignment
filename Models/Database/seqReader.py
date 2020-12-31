@@ -13,7 +13,9 @@ class SeqDBReader(ISeqReader):
         pass
 
     def readSeq(self, id) -> Sequence:
-        readSeqs = self._reader.read([SequencesTableCreator.ID_COL_NAME, SequencesTableCreator.SEQ_COL_NAME],
+        readSeqs = self._reader.read([SequencesTableCreator.ID_COL_NAME,
+                                      SequencesTableCreator.SEQ_COL_NAME,
+                                      SequencesTableCreator.COMMENT_COL_NAME],
                                  f' {SequencesTableCreator.ID_COL_NAME} = "{id}"')
         if len(readSeqs) > 0:
             return self._fetchOneSequence(readSeqs[0])
@@ -31,7 +33,8 @@ class SeqDBReader(ISeqReader):
     def _fetchOneSequence(self, seqMap):
         id = seqMap[SequencesTableCreator.ID_COL_NAME]
         sequence = seqMap[SequencesTableCreator.SEQ_COL_NAME]
-        return Sequence(id, sequence)
+        comment = seqMap[SequencesTableCreator.COMMENT_COL_NAME]
+        return Sequence(id, sequence, comment)
 
 
 

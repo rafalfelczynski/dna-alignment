@@ -1,6 +1,5 @@
 <RCC>
 <qresource>
-    <file>system_tray_icon.png</file>
     <file>dna_icon.png</file>
     <file>notepad_icon.png</file>
     <file>connection_ok.png</file>
@@ -8,7 +7,7 @@
     <file>green_led.png</file>
     <file>red_led.png</file>
     <file>orange_led.png</file>
-    <file>select_btn.png</file>
     <file>background.jpg</file>
+    <file>alignment.png</file>
 </qresource>
 </RCC>

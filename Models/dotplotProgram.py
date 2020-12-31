@@ -1,10 +1,11 @@
 import sys
-from Models.Database.dotplotDBWriter import *
-from Models.Database.seqDbWriter import *
 from Models.Database.seqReader import SeqDBReader
 from Models.Database.dbconnection import DBConnection
 from Models.dotplot import Dotplot
 from Models.Database.dotplotDBWriter import DotplotDBWriter
+
+DOTPLOT_PROGRAM_PATH = "Models/dotplotProgram.py"
+DOTPLOT_PROGRAM_EXE_PATH = "dotplotProgram.exe"
 
 
 def splitArgs(args):

@@ -1,10 +1,10 @@
-import numpy as np
 import sys
 from io import BytesIO
-from Models.dnaSequence import DNASequence
+
+import numpy as np
+
 from Models.dotplot import Dotplot
 from Models.sequence import Sequence
-from PySide2.QtCore import QRegExp
 
 
 def dotplotMatrixToString(dotplot: Dotplot):

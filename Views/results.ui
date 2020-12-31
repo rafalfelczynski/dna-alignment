@@ -114,6 +114,9 @@ QHeaderView::section {
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="DotplotsTableWidget" name="dotpTableWidget">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">QTableWidget {
 	background: transparent;
@@ -121,7 +124,12 @@ QHeaderView::section {
 
 QTableWidget::item {
 	color: white;
-	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+	background-color: rgba(179, 179, 179, 102);
+}
+
+QTableWidget::item:selected {
+	color: white;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 #6a6ea9, stop: 1 #888dd9);
 }
 
@@ -139,6 +147,15 @@ QHeaderView::section {
         <property name="columnCount">
          <number>2</number>
         </property>
+        <attribute name="horizontalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
         <column>
          <property name="text">
           <string>Sequence 1</string>
@@ -173,6 +190,9 @@ QHeaderView::section {
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <widget class="AlignmentsTableWidget" name="alignTableWidget">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true">QTableWidget {
 	background: transparent;
@@ -180,7 +200,12 @@ QHeaderView::section {
 
 QTableWidget::item {
 	color: white;
-	selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+	background-color: rgba(179, 179, 179, 102);
+}
+
+QTableWidget::item:selected {
+	color: white;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 #6a6ea9, stop: 1 #888dd9);
 }
 
@@ -195,6 +220,15 @@ QHeaderView::section {
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
         </property>
+        <attribute name="horizontalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="verticalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
         <column>
          <property name="text">
           <string>Sequence 1</string>

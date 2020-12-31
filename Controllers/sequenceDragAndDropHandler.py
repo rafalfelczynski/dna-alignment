@@ -1,15 +1,14 @@
-from Controllers.dndHandler import *
 from PySide2.QtGui import *
-from PySide2.QtCore import Signal
-from Controllers.dndFileParser import DnDFileParser
-from Views.infoDialog import InfoDialog
 
+from Controllers.dndFileParser import DnDFileParser
+from Controllers.dndHandler import *
+from Views.infoDialog import InfoDialog
 
 class SequenceDragAndDropHandler(DragAndDropHandler):
 
-    def __init__(self, mainWindow, seqDbReader, seqDbWriter):
+    def __init__(self, relatedWidget, seqDbReader, seqDbWriter):
         super().__init__()
-        self.mainWindow = mainWindow
+        self.relatedWidget = relatedWidget
         self.seqDbReader = seqDbReader
         self.seqDbWriter = seqDbWriter
         self.fileParser = DnDFileParser()
@@ -22,7 +21,7 @@ class SequenceDragAndDropHandler(DragAndDropHandler):
             wasAdded = self.seqDbWriter.writeSeq(seq)
             if wasAdded:
                 addedSequences.append(seq.identifier)
-                self.mainWindow.newSeqAvailable(seq.identifier)
+                self.relatedWidget.newSeqAvailable(seq.identifier)
             else:
                 rejectedSequences.append(seq.identifier)
         if len(rejectedFiles) > 0 or len(rejectedSequences) > 0:
@@ -33,15 +32,18 @@ class SequenceDragAndDropHandler(DragAndDropHandler):
         if seq.isNotEmpty():
             drag = QDrag(sourceIdentifier)
             mimeData = QMimeData()
+            cwd = QDir.current()
+            cwd.mkdir("temp")
             file = QFile(f"temp/{seq.identifier}.fasta")
+
             fileInfo = QFileInfo(file)
             file.open(QFile.WriteOnly)
-            file.write(QByteArray(f">{seq.identifier}\n{seq.cutSequenceIntoFragments(80)}".encode("utf-8")))
+            file.write(QByteArray(f">{seq.identifier} {seq.comment}\n{seq.cutSequenceIntoFragments(80)}".encode("utf-8")))
             file.close()
             url = QUrl.fromLocalFile(fileInfo.absoluteFilePath())
             mimeData.setUrls([url])
             drag.setMimeData(mimeData)
-            dragIcon: QPixmap = QPixmap(":/notepad_icon.png").scaled(50, 50, Qt.IgnoreAspectRatio)
+            dragIcon: QPixmap = QPixmap(":/notepad_icon.png").scaled(50, 50, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
             drag.setPixmap(dragIcon)
             drag.exec_(Qt.CopyAction, Qt.CopyAction)
             file.remove()

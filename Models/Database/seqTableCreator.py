@@ -6,6 +6,7 @@ class SequencesTableCreator:
     TABLE_NAME = "sequences"
     ID_COL_NAME = "id"
     SEQ_COL_NAME = "sequence"
+    COMMENT_COL_NAME = "comment"
 
     def __init__(self, dbconn):
         self.__conn: IDBConnection = dbconn
@@ -13,7 +14,8 @@ class SequencesTableCreator:
     def createTable(self):
         sql = f"create table if not exists {self.TABLE_NAME}(" \
               f"{self.ID_COL_NAME} text primary key," \
-              f" {self.SEQ_COL_NAME} text not null)"
+              f" {self.SEQ_COL_NAME} text not null," \
+              f" {self.COMMENT_COL_NAME} text)"
         query = self.__conn.createQuery(sql)
         return self.__conn.executeQuery(query)
 

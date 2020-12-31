@@ -1,5 +1,5 @@
-from PySide2.QtNetwork import QNetworkReply, QNetworkRequest, QNetworkAccessManager, QSslError, QSslSocket, QSslConfiguration
 from PySide2.QtCore import QUrl, QUrlQuery, Signal, QObject
+from PySide2.QtNetwork import QNetworkReply, QNetworkRequest, QNetworkAccessManager, QSslError, QSslConfiguration
 
 
 class NetworkFastaFetcher(QObject):
@@ -13,7 +13,7 @@ class NetworkFastaFetcher(QObject):
         QNetworkReply.NetworkError.ProtocolInvalidOperationError: "There is no sequence with that identifier!"
     }
     __UNKNOWN_ERROR_MSG = "UNKNOWN ERROR"
-    data_ready = Signal(str, str)
+    data_ready = Signal(str, str, str)
     error_occurred = Signal(str)
 
     def __init__(self, networkManager: QNetworkAccessManager):
@@ -44,9 +44,12 @@ class NetworkFastaFetcher(QObject):
             sequence = ""
             if reply.isFinished() and reply.error() == QNetworkReply.NetworkError.NoError:
                 identifier = reply.readLine().data().decode().replace("\n", "").replace('"', "")
+                identifierParts = identifier.split(" ")
+                identifier = identifierParts[0]
+                comment = " ".join(identifierParts[1:])
                 sequence = reply.readAll().data().decode().replace("\n", "")
                 identifier, sequence = self.__validateFetchedData(identifier, sequence)
-                self.data_ready.emit(identifier, sequence)
+                self.data_ready.emit(identifier, sequence, comment)
             self.__replyObjects.pop(replyObjId)
 
     def _parseError(self, errorCode: QNetworkReply.NetworkError, identifier, reply):
@@ -62,7 +65,7 @@ class NetworkFastaFetcher(QObject):
             self.error_occurred.emit("SSL error! " + err.errorString())
 
     def __validateFetchedData(self, identifier: str, sequence: str):
-        if len(identifier) > 0 and identifier[0] == '>':
+        if len(identifier) > 0 and identifier[0] == '>' and len(sequence) > 0:
             return identifier[1:], sequence
         else:
             if "Error" in identifier:

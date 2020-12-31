@@ -1,13 +1,14 @@
-from Models.iseqreader import ISeqReader
-from Models.iseqwriter import ISeqWriter
-from Models.sequence import Sequence
-from PySide2.QtCore import QObject, Signal
+from typing import List
+
 from PySide2.QtNetwork import QNetworkAccessManager
-from Models.networkFastaFetcher import NetworkFastaFetcher
-from typing import List, Dict
-from Views.infoDialog import *
-from Views.confirmDialog import ConfirmDialog
+
+from Models.iseqreader import ISeqReader
 from Models.isequpdater import ISeqUpdater
+from Models.iseqwriter import ISeqWriter
+from Models.networkFastaFetcher import NetworkFastaFetcher
+from Models.sequence import Sequence
+from Views.confirmDialog import ConfirmDialog
+from Views.infoDialog import *
 
 
 class SeqManager(QObject):
@@ -29,12 +30,8 @@ class SeqManager(QObject):
         self._seqUpdater = seqUpdater
 
     def getNewSeqFromNet(self, seqId):
-        # Check if sequence already exists
-        if self._seqReader.checkIfExists(seqId):
-            self.seq_already_exists.emit(seqId)
-        else:
-            # Set new task for retrieving sequence from the internet
-            self._fastaFetcher.fetchFasta(seqId)
+        # Set new task for retrieving sequence from the internet
+        self._fastaFetcher.fetchFasta(seqId)
 
     def showSequence(self, seqId):
         sequence = self._seqReader.readSeq(seqId)
@@ -62,7 +59,9 @@ class SeqManager(QObject):
         dialog = InfoDialog()
         self.dialogs[dialog.identifier] = dialog
         dialog.finished.connect(lambda: self.removeDialogWithSequence(dialog.identifier))
-        dialog.setText(f"Identifier:\n{sequence.identifier}\n\nSequence:\n{sequence.cutSequenceIntoFragments(50)}")
+        dialog.setText(f"Identifier:\n{sequence.identifier}\n"
+                       f"Comment:\n{sequence.comment if sequence.comment else 'Nothing'}\n\n"
+                       f"Sequence:\n{sequence.cutSequenceIntoFragments(50)}")
         dialog.resize(600, 300)
         dialog.setWindowModality(Qt.NonModal)
         dialog.show()
@@ -76,25 +75,22 @@ class SeqManager(QObject):
 
     def _networkErrorOccurred(self, msg):
         dialog = InfoDialog()
+        dialog.resize(300, 200)
         dialog.setText(msg)
         dialog.exec_()
 
-    def _seqFetched(self, id: str, seq: str):
+    def _seqFetched(self, id: str, seq: str, comment: str):
         if id and seq:
-            sequence = Sequence(id, seq)
+            sequence = Sequence(id, seq, comment)
             if sequence.isValid():
                 if self.addSeqToDatabase(sequence):
                     self.new_seq_available.emit(id)
                 else:
-                    self.seq_already_exists.emit(id)
-                    dialog = InfoDialog()
-                    dialog.resize(300, 200)
-                    dialog.setText(f'Sequence with the id "{id}" already exists!')
-                    dialog.exec_()
+                    self._seqExistsShowDialog(id)
             else:
-                self.not_dna_se.emit(id)
+                self.not_dna_sequence.emit(id)
         else:
-            self.not_dna_se.emit(id)
+            self.not_dna_sequence.emit(id)
 
     def addSeqToDatabase(self, sequence: Sequence):
         if sequence.isValid():
@@ -102,6 +98,11 @@ class SeqManager(QObject):
         else:
             return False
 
+    def _seqExistsShowDialog(self, id):
+        dialog = InfoDialog()
+        dialog.resize(300, 200)
+        dialog.setText(f'Sequence with the id {id} already exists!')
+        dialog.exec_()
 
 
 

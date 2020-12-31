@@ -1,8 +1,8 @@
-from Models.Database.dotplotDbReader import *
-from Models.dotplot import Dotplot
-from Models.Database.seqTableCreator import SequencesTableCreator
-from Models.Database.dotplotTableCreator import DotplotTableCreator
 from typing import List
+
+from Models.Database.dotplotDbReader import *
+from Models.Database.dotplotTableCreator import DotplotTableCreator
+from Models.dotplot import Dotplot
 
 
 class DotplotReader:
@@ -16,14 +16,6 @@ class DotplotReader:
         if len(dotplots) > 0:
             return dotplots[0]
         return Dotplot(None, None)
-
-    # def readAllDotplots(self) -> List[Dotplot]:
-    #     recordMaps = self._reader.readAllDotplots([DotplotTableCreator.SEQ1_COL_NAME, DotplotTableCreator.SEQ2_COL_NAME], where=None, whereValues=None)
-    #     dotplots = []
-    #     for recordMap in recordMaps:
-    #         dotplots.append(self._parseRecordMap(recordMap))
-    #     print("all dotplots:", len(dotplots))
-    #     return dotplots
 
     def readAllDotplots(self) -> List[Dotplot]:
         columnsToRead = [DotplotTableCreator.SEQ1_COL_NAME, DotplotTableCreator.SEQ2_COL_NAME]

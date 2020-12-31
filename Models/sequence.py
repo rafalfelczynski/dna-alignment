@@ -1,4 +1,3 @@
-import copy
 
 
 class NotValidSequenceException(Exception):
@@ -8,9 +7,10 @@ class NotValidSequenceException(Exception):
 
 class Sequence:
 
-    def __init__(self, identifier: str, sequence: str):
+    def __init__(self, identifier: str, sequence: str, comment: str=None):
         self.identifier: str = identifier
         self.sequence: str = sequence
+        self.comment: str = comment
 
     def isNotEmpty(self) -> bool:
         return bool(self.identifier) and bool(self.sequence)

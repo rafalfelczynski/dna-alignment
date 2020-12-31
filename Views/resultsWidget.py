@@ -1,11 +1,8 @@
-from Views.ui_results import *
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-from Models.dotplot import Dotplot
-from Models.alignment import Alignment
-import PyQt5.QtCore
 from typing import List
+
+from Models.alignment import Alignment
+from Models.dotplot import Dotplot
+from Views.ui_results import *
 
 
 class ResultsWidget(QWidget):

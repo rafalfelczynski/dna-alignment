@@ -12,7 +12,7 @@ class AlignmentDbWriter:
     def write(self, alignment: Alignment):
         sql = f"insert into {AlignmentTableCreator.TABLE_NAME}(" \
               f"{AlignmentTableCreator.SEQ1_ID_COL_NAME}," \
-              f" {AlignmentTableCreator.SEQ2_COL_NAME}," \
+              f" {AlignmentTableCreator.SEQ2_ID_COL_NAME}," \
               f" {AlignmentTableCreator.MATCH_COL_NAME}," \
               f" {AlignmentTableCreator.MISMATCH_COL_NAME}," \
               f" {AlignmentTableCreator.GAP_COL_NAME}," \
@@ -29,7 +29,7 @@ class AlignmentDbWriter:
         query.bindValue(2, ali.scoring.match)
         query.bindValue(3, ali.scoring.mismatch)
         query.bindValue(4, ali.scoring.gap)
-        query.bindValue(5, ali.seq1.sequence)
-        query.bindValue(6, ali.seq2.sequence)
+        query.bindValue(5, ali.seq1Aligned)
+        query.bindValue(6, ali.seq2Aligned)
 
 

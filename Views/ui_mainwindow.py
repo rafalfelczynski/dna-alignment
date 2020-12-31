@@ -12,7 +12,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from Views.dragNDropListWidget import DragNDropListWidget
+from Views.dndListWidget import DndListWidget
 from Views.activeProcTableWidget import ActiveProcTableWidget
 
 
@@ -20,7 +20,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1221, 536)
+        MainWindow.resize(889, 472)
         font = QFont()
         font.setPointSize(12)
         MainWindow.setFont(font)
@@ -61,7 +61,7 @@ class Ui_MainWindow(object):
 "\n"
 "QPushButton {\n"
 "    color: white;\n"
-"    border-radius: 12px;\n"
+"    border-radius: 8px;\n"
 "    border: 2px outset white;\n"
 "    background-color: qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1,\n"
 "    stop: 0 white,\n"
@@ -88,8 +88,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QListView {\n"
-"	backgr"
-                        "ound: transparent;\n"
+"	backgro"
+                        "und: transparent;\n"
 "}\n"
 "\n"
 "QTableWidget {\n"
@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.alignmentRadioBtn, 2, 0, 1, 1)
 
 
-        self.gridLayout_6.addWidget(self.operationGroupBox, 2, 8, 3, 1)
+        self.gridLayout_6.addWidget(self.operationGroupBox, 2, 6, 3, 1)
 
         self.processesGroupBox = QGroupBox(self.centralwidget)
         self.processesGroupBox.setObjectName(u"processesGroupBox")
@@ -200,7 +200,26 @@ class Ui_MainWindow(object):
         __qtablewidgetitem9 = QTableWidgetItem()
         self.activeProcTableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
         self.activeProcTableWidget.setObjectName(u"activeProcTableWidget")
-        self.activeProcTableWidget.setStyleSheet(u"")
+        self.activeProcTableWidget.setFocusPolicy(Qt.NoFocus)
+        self.activeProcTableWidget.setStyleSheet(u"QTableWidget {\n"
+"	background: transparent;\n"
+"}\n"
+"\n"
+"QTableWidget::item {\n"
+"	color: white;\n"
+"	background-color: rgba(179, 179, 179, 102);\n"
+"}\n"
+"\n"
+"QTableWidget::item:selected {\n"
+"	color: white;\n"
+"	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,\n"
+"                                stop: 0 #6a6ea9, stop: 1 #888dd9);\n"
+"}\n"
+"\n"
+"QHeaderView::section {\n"
+"	background-color: #333333;\n"
+"	color: white;\n"
+"}")
         self.activeProcTableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.activeProcTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.activeProcTableWidget.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -208,12 +227,14 @@ class Ui_MainWindow(object):
         self.activeProcTableWidget.horizontalHeader().setCascadingSectionResizes(True)
         self.activeProcTableWidget.horizontalHeader().setMinimumSectionSize(70)
         self.activeProcTableWidget.horizontalHeader().setDefaultSectionSize(70)
+        self.activeProcTableWidget.horizontalHeader().setHighlightSections(False)
         self.activeProcTableWidget.verticalHeader().setVisible(False)
+        self.activeProcTableWidget.verticalHeader().setHighlightSections(False)
 
         self.gridLayout_11.addWidget(self.activeProcTableWidget, 0, 0, 1, 1)
 
 
-        self.gridLayout_6.addWidget(self.processesGroupBox, 5, 4, 5, 5)
+        self.gridLayout_6.addWidget(self.processesGroupBox, 5, 2, 5, 5)
 
         self.seqGroupBox = QGroupBox(self.centralwidget)
         self.seqGroupBox.setObjectName(u"seqGroupBox")
@@ -231,14 +252,17 @@ class Ui_MainWindow(object):
         sizePolicy3.setHeightForWidth(self.selectSeqSecBtn.sizePolicy().hasHeightForWidth())
         self.selectSeqSecBtn.setSizePolicy(sizePolicy3)
 
-        self.gridLayout.addWidget(self.selectSeqSecBtn, 9, 2, 1, 2)
+        self.gridLayout.addWidget(self.selectSeqSecBtn, 9, 1, 1, 1)
 
-        self.seq1ListWidget = DragNDropListWidget(self.seqGroupBox)
+        self.seq1ListWidget = DndListWidget(self.seqGroupBox)
         self.seq1ListWidget.setObjectName(u"seq1ListWidget")
         sizePolicy2.setHeightForWidth(self.seq1ListWidget.sizePolicy().hasHeightForWidth())
         self.seq1ListWidget.setSizePolicy(sizePolicy2)
+        self.seq1ListWidget.setFocusPolicy(Qt.NoFocus)
         self.seq1ListWidget.setStyleSheet(u"QListView::item {\n"
 "	color: white;\n"
+"	background-color: rgba(179, 179, 179, 102);\n"
+"	border-bottom: 2px solid black;\n"
 "}\n"
 "\n"
 "QListView::item:selected:!active {\n"
@@ -253,7 +277,7 @@ class Ui_MainWindow(object):
         self.seq1ListWidget.setProperty("isWrapping", False)
         self.seq1ListWidget.setWordWrap(True)
 
-        self.gridLayout.addWidget(self.seq1ListWidget, 0, 0, 9, 4)
+        self.gridLayout.addWidget(self.seq1ListWidget, 0, 0, 9, 2)
 
         self.selectSeqFirstBtn = QPushButton(self.seqGroupBox)
         self.selectSeqFirstBtn.setObjectName(u"selectSeqFirstBtn")
@@ -261,10 +285,10 @@ class Ui_MainWindow(object):
         self.selectSeqFirstBtn.setSizePolicy(sizePolicy3)
         self.selectSeqFirstBtn.setStyleSheet(u"")
 
-        self.gridLayout.addWidget(self.selectSeqFirstBtn, 9, 0, 1, 2)
+        self.gridLayout.addWidget(self.selectSeqFirstBtn, 9, 0, 1, 1)
 
 
-        self.gridLayout_6.addWidget(self.seqGroupBox, 0, 0, 10, 4)
+        self.gridLayout_6.addWidget(self.seqGroupBox, 0, 0, 10, 2)
 
         self.indicatorsGroupBox = QGroupBox(self.centralwidget)
         self.indicatorsGroupBox.setObjectName(u"indicatorsGroupBox")
@@ -273,6 +297,7 @@ class Ui_MainWindow(object):
         self.indicatorsGroupBox.setMinimumSize(QSize(0, 100))
         self.indicatorsGroupBox.setAlignment(Qt.AlignCenter)
         self.gridLayout_3 = QGridLayout(self.indicatorsGroupBox)
+        self.gridLayout_3.setSpacing(2)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_3.setContentsMargins(0, 0, 0, 2)
         self.internetConnLbl = QLabel(self.indicatorsGroupBox)
@@ -282,84 +307,88 @@ class Ui_MainWindow(object):
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.internetConnLbl.sizePolicy().hasHeightForWidth())
         self.internetConnLbl.setSizePolicy(sizePolicy4)
-        self.internetConnLbl.setMinimumSize(QSize(50, 50))
+        self.internetConnLbl.setMinimumSize(QSize(60, 60))
         self.internetConnLbl.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_3.addWidget(self.internetConnLbl, 1, 3, 1, 1)
+        self.gridLayout_3.addWidget(self.internetConnLbl, 1, 3, 2, 1)
 
-        self.label_2 = QLabel(self.indicatorsGroupBox)
-        self.label_2.setObjectName(u"label_2")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        self.secSeqLbl = QLabel(self.indicatorsGroupBox)
+        self.secSeqLbl.setObjectName(u"secSeqLbl")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy5)
-        self.label_2.setMinimumSize(QSize(50, 20))
-        self.label_2.setAlignment(Qt.AlignCenter)
+        sizePolicy5.setHeightForWidth(self.secSeqLbl.sizePolicy().hasHeightForWidth())
+        self.secSeqLbl.setSizePolicy(sizePolicy5)
+        self.secSeqLbl.setMinimumSize(QSize(50, 20))
+        self.secSeqLbl.setAlignment(Qt.AlignCenter)
+        self.secSeqLbl.setWordWrap(True)
 
-        self.gridLayout_3.addWidget(self.label_2, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.secSeqLbl, 0, 1, 1, 1)
 
         self.scoringLedLbl = QLabel(self.indicatorsGroupBox)
         self.scoringLedLbl.setObjectName(u"scoringLedLbl")
         sizePolicy4.setHeightForWidth(self.scoringLedLbl.sizePolicy().hasHeightForWidth())
         self.scoringLedLbl.setSizePolicy(sizePolicy4)
-        self.scoringLedLbl.setMinimumSize(QSize(50, 50))
+        self.scoringLedLbl.setMinimumSize(QSize(60, 60))
         self.scoringLedLbl.setStyleSheet(u"")
         self.scoringLedLbl.setScaledContents(False)
         self.scoringLedLbl.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_3.addWidget(self.scoringLedLbl, 1, 2, 1, 1)
+        self.gridLayout_3.addWidget(self.scoringLedLbl, 1, 2, 2, 1)
 
         self.seqFirstLedLbl = QLabel(self.indicatorsGroupBox)
         self.seqFirstLedLbl.setObjectName(u"seqFirstLedLbl")
-        sizePolicy4.setHeightForWidth(self.seqFirstLedLbl.sizePolicy().hasHeightForWidth())
-        self.seqFirstLedLbl.setSizePolicy(sizePolicy4)
-        self.seqFirstLedLbl.setMinimumSize(QSize(50, 50))
+        sizePolicy.setHeightForWidth(self.seqFirstLedLbl.sizePolicy().hasHeightForWidth())
+        self.seqFirstLedLbl.setSizePolicy(sizePolicy)
+        self.seqFirstLedLbl.setMinimumSize(QSize(60, 60))
         self.seqFirstLedLbl.setStyleSheet(u"")
         self.seqFirstLedLbl.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_3.addWidget(self.seqFirstLedLbl, 1, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.seqFirstLedLbl, 1, 0, 2, 1)
 
-        self.label = QLabel(self.indicatorsGroupBox)
-        self.label.setObjectName(u"label")
-        sizePolicy5.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy5)
-        self.label.setMinimumSize(QSize(50, 20))
-        self.label.setAlignment(Qt.AlignCenter)
+        self.firstSeqLbl = QLabel(self.indicatorsGroupBox)
+        self.firstSeqLbl.setObjectName(u"firstSeqLbl")
+        sizePolicy4.setHeightForWidth(self.firstSeqLbl.sizePolicy().hasHeightForWidth())
+        self.firstSeqLbl.setSizePolicy(sizePolicy4)
+        self.firstSeqLbl.setMinimumSize(QSize(50, 20))
+        self.firstSeqLbl.setAlignment(Qt.AlignCenter)
+        self.firstSeqLbl.setWordWrap(True)
 
-        self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.firstSeqLbl, 0, 0, 1, 1)
 
         self.seqSecLedLbl = QLabel(self.indicatorsGroupBox)
         self.seqSecLedLbl.setObjectName(u"seqSecLedLbl")
-        sizePolicy4.setHeightForWidth(self.seqSecLedLbl.sizePolicy().hasHeightForWidth())
-        self.seqSecLedLbl.setSizePolicy(sizePolicy4)
-        self.seqSecLedLbl.setMinimumSize(QSize(50, 50))
+        sizePolicy.setHeightForWidth(self.seqSecLedLbl.sizePolicy().hasHeightForWidth())
+        self.seqSecLedLbl.setSizePolicy(sizePolicy)
+        self.seqSecLedLbl.setMinimumSize(QSize(60, 60))
         self.seqSecLedLbl.setStyleSheet(u"")
         self.seqSecLedLbl.setScaledContents(False)
         self.seqSecLedLbl.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_3.addWidget(self.seqSecLedLbl, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.seqSecLedLbl, 1, 1, 2, 1)
 
-        self.label_4 = QLabel(self.indicatorsGroupBox)
-        self.label_4.setObjectName(u"label_4")
-        sizePolicy5.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
-        self.label_4.setSizePolicy(sizePolicy5)
-        self.label_4.setMinimumSize(QSize(50, 20))
-        self.label_4.setAlignment(Qt.AlignCenter)
+        self.internetLbl = QLabel(self.indicatorsGroupBox)
+        self.internetLbl.setObjectName(u"internetLbl")
+        sizePolicy5.setHeightForWidth(self.internetLbl.sizePolicy().hasHeightForWidth())
+        self.internetLbl.setSizePolicy(sizePolicy5)
+        self.internetLbl.setMinimumSize(QSize(50, 20))
+        self.internetLbl.setAlignment(Qt.AlignCenter)
+        self.internetLbl.setWordWrap(True)
 
-        self.gridLayout_3.addWidget(self.label_4, 0, 3, 1, 1)
+        self.gridLayout_3.addWidget(self.internetLbl, 0, 3, 1, 1)
 
-        self.label_3 = QLabel(self.indicatorsGroupBox)
-        self.label_3.setObjectName(u"label_3")
-        sizePolicy4.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy4)
-        self.label_3.setMinimumSize(QSize(50, 20))
-        self.label_3.setAlignment(Qt.AlignCenter)
+        self.scoringLbl = QLabel(self.indicatorsGroupBox)
+        self.scoringLbl.setObjectName(u"scoringLbl")
+        sizePolicy5.setHeightForWidth(self.scoringLbl.sizePolicy().hasHeightForWidth())
+        self.scoringLbl.setSizePolicy(sizePolicy5)
+        self.scoringLbl.setMinimumSize(QSize(50, 20))
+        self.scoringLbl.setAlignment(Qt.AlignCenter)
+        self.scoringLbl.setWordWrap(True)
 
-        self.gridLayout_3.addWidget(self.label_3, 0, 2, 1, 1)
+        self.gridLayout_3.addWidget(self.scoringLbl, 0, 2, 1, 1)
 
 
-        self.gridLayout_6.addWidget(self.indicatorsGroupBox, 2, 4, 3, 4)
+        self.gridLayout_6.addWidget(self.indicatorsGroupBox, 2, 2, 3, 4)
 
         self.scoringGroupBox = QGroupBox(self.centralwidget)
         self.scoringGroupBox.setObjectName(u"scoringGroupBox")
@@ -373,54 +402,12 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.gridLayout_4.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.gridLayout_4.setContentsMargins(5, 9, 5, 9)
-        self.label_9 = QLabel(self.scoringGroupBox)
-        self.label_9.setObjectName(u"label_9")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
-        self.label_9.setSizePolicy(sizePolicy6)
-        self.label_9.setAlignment(Qt.AlignCenter)
+        self.fetchScoringBtn = QPushButton(self.scoringGroupBox)
+        self.fetchScoringBtn.setObjectName(u"fetchScoringBtn")
+        sizePolicy.setHeightForWidth(self.fetchScoringBtn.sizePolicy().hasHeightForWidth())
+        self.fetchScoringBtn.setSizePolicy(sizePolicy)
 
-        self.gridLayout_4.addWidget(self.label_9, 0, 2, 1, 1)
-
-        self.label_8 = QLabel(self.scoringGroupBox)
-        self.label_8.setObjectName(u"label_8")
-        sizePolicy6.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
-        self.label_8.setSizePolicy(sizePolicy6)
-        self.label_8.setMinimumSize(QSize(0, 0))
-        self.label_8.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.label_8, 0, 1, 1, 1)
-
-        self.mismatchLineEdit = QLineEdit(self.scoringGroupBox)
-        self.mismatchLineEdit.setObjectName(u"mismatchLineEdit")
-        sizePolicy.setHeightForWidth(self.mismatchLineEdit.sizePolicy().hasHeightForWidth())
-        self.mismatchLineEdit.setSizePolicy(sizePolicy)
-        self.mismatchLineEdit.setMinimumSize(QSize(0, 0))
-        self.mismatchLineEdit.setFocusPolicy(Qt.ClickFocus)
-        self.mismatchLineEdit.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.mismatchLineEdit, 1, 1, 1, 1)
-
-        self.gapLineEdit = QLineEdit(self.scoringGroupBox)
-        self.gapLineEdit.setObjectName(u"gapLineEdit")
-        sizePolicy.setHeightForWidth(self.gapLineEdit.sizePolicy().hasHeightForWidth())
-        self.gapLineEdit.setSizePolicy(sizePolicy)
-        self.gapLineEdit.setMinimumSize(QSize(0, 0))
-        self.gapLineEdit.setFocusPolicy(Qt.ClickFocus)
-        self.gapLineEdit.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.gapLineEdit, 1, 2, 1, 1)
-
-        self.label_10 = QLabel(self.scoringGroupBox)
-        self.label_10.setObjectName(u"label_10")
-        sizePolicy6.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
-        self.label_10.setSizePolicy(sizePolicy6)
-        self.label_10.setScaledContents(False)
-        self.label_10.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.label_10, 0, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.fetchScoringBtn, 1, 3, 1, 1)
 
         self.matchLineEdit = QLineEdit(self.scoringGroupBox)
         self.matchLineEdit.setObjectName(u"matchLineEdit")
@@ -433,24 +420,62 @@ class Ui_MainWindow(object):
 
         self.gridLayout_4.addWidget(self.matchLineEdit, 1, 0, 1, 1)
 
-        self.fetchScoringBtn = QPushButton(self.scoringGroupBox)
-        self.fetchScoringBtn.setObjectName(u"fetchScoringBtn")
-        sizePolicy.setHeightForWidth(self.fetchScoringBtn.sizePolicy().hasHeightForWidth())
-        self.fetchScoringBtn.setSizePolicy(sizePolicy)
+        self.gapLineEdit = QLineEdit(self.scoringGroupBox)
+        self.gapLineEdit.setObjectName(u"gapLineEdit")
+        sizePolicy.setHeightForWidth(self.gapLineEdit.sizePolicy().hasHeightForWidth())
+        self.gapLineEdit.setSizePolicy(sizePolicy)
+        self.gapLineEdit.setMinimumSize(QSize(0, 0))
+        self.gapLineEdit.setFocusPolicy(Qt.ClickFocus)
+        self.gapLineEdit.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_4.addWidget(self.fetchScoringBtn, 1, 4, 1, 1)
+        self.gridLayout_4.addWidget(self.gapLineEdit, 1, 2, 1, 1)
 
-        self.horizontalSpacer = QSpacerItem(60, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.mismatchLineEdit = QLineEdit(self.scoringGroupBox)
+        self.mismatchLineEdit.setObjectName(u"mismatchLineEdit")
+        sizePolicy.setHeightForWidth(self.mismatchLineEdit.sizePolicy().hasHeightForWidth())
+        self.mismatchLineEdit.setSizePolicy(sizePolicy)
+        self.mismatchLineEdit.setMinimumSize(QSize(0, 0))
+        self.mismatchLineEdit.setFocusPolicy(Qt.ClickFocus)
+        self.mismatchLineEdit.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_4.addItem(self.horizontalSpacer, 1, 3, 1, 1)
+        self.gridLayout_4.addWidget(self.mismatchLineEdit, 1, 1, 1, 1)
+
+        self.label_8 = QLabel(self.scoringGroupBox)
+        self.label_8.setObjectName(u"label_8")
+        sizePolicy6 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
+        self.label_8.setSizePolicy(sizePolicy6)
+        self.label_8.setMinimumSize(QSize(0, 0))
+        self.label_8.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.label_8, 0, 1, 1, 1)
+
+        self.label_10 = QLabel(self.scoringGroupBox)
+        self.label_10.setObjectName(u"label_10")
+        sizePolicy6.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
+        self.label_10.setSizePolicy(sizePolicy6)
+        self.label_10.setScaledContents(False)
+        self.label_10.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.label_10, 0, 0, 1, 1)
+
+        self.label_9 = QLabel(self.scoringGroupBox)
+        self.label_9.setObjectName(u"label_9")
+        sizePolicy6.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
+        self.label_9.setSizePolicy(sizePolicy6)
+        self.label_9.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.label_9, 0, 2, 1, 1)
 
 
-        self.gridLayout_6.addWidget(self.scoringGroupBox, 0, 4, 2, 5)
+        self.gridLayout_6.addWidget(self.scoringGroupBox, 0, 2, 2, 5)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1221, 23))
+        self.menubar.setGeometry(QRect(0, 0, 889, 23))
         sizePolicy7 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         sizePolicy7.setHorizontalStretch(0)
         sizePolicy7.setVerticalStretch(0)
@@ -523,25 +548,25 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem9 = self.activeProcTableWidget.horizontalHeaderItem(9)
         ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"%MEM", None));
         self.seqGroupBox.setTitle(QCoreApplication.translate("MainWindow", u"Sequences", None))
-        self.selectSeqSecBtn.setText(QCoreApplication.translate("MainWindow", u"Select Second Sequence", None))
-        self.selectSeqFirstBtn.setText(QCoreApplication.translate("MainWindow", u"Select First Sequence", None))
+        self.selectSeqSecBtn.setText(QCoreApplication.translate("MainWindow", u"Select Second", None))
+        self.selectSeqFirstBtn.setText(QCoreApplication.translate("MainWindow", u"Select First", None))
         self.indicatorsGroupBox.setTitle(QCoreApplication.translate("MainWindow", u"Indicators", None))
         self.internetConnLbl.setText("")
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Sequence 2", None))
+        self.secSeqLbl.setText(QCoreApplication.translate("MainWindow", u"Second Sequence", None))
         self.scoringLedLbl.setText("")
         self.seqFirstLedLbl.setText("")
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Sequence 1", None))
+        self.firstSeqLbl.setText(QCoreApplication.translate("MainWindow", u"First Sequence", None))
         self.seqSecLedLbl.setText("")
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Internet", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Scoring", None))
+        self.internetLbl.setText(QCoreApplication.translate("MainWindow", u"Internet", None))
+        self.scoringLbl.setText(QCoreApplication.translate("MainWindow", u"Scoring", None))
         self.scoringGroupBox.setTitle(QCoreApplication.translate("MainWindow", u"Scoring", None))
-        self.label_9.setText(QCoreApplication.translate("MainWindow", u"Gap", None))
-        self.label_8.setText(QCoreApplication.translate("MainWindow", u"Mismatch", None))
-        self.mismatchLineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type in...", None))
-        self.gapLineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type in...", None))
-        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Match", None))
-        self.matchLineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type in...", None))
         self.fetchScoringBtn.setText(QCoreApplication.translate("MainWindow", u"Select", None))
+        self.matchLineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type in...", None))
+        self.gapLineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type in...", None))
+        self.mismatchLineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type in...", None))
+        self.label_8.setText(QCoreApplication.translate("MainWindow", u"Mismatch", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Match", None))
+        self.label_9.setText(QCoreApplication.translate("MainWindow", u"Gap", None))
         self.menuSequence.setTitle(QCoreApplication.translate("MainWindow", u"Sequence", None))
         self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
         self.menuResults.setTitle(QCoreApplication.translate("MainWindow", u"View", None))

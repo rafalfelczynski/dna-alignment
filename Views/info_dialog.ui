@@ -71,6 +71,7 @@ QPushButton {
      </property>
      <property name="font">
       <font>
+       <family>Consolas</family>
        <pointsize>10</pointsize>
       </font>
      </property>
@@ -91,7 +92,7 @@ QPushButton {
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <Signal>accepted()</Signal>
+   <signal>accepted()</signal>
    <receiver>Dialog</receiver>
    <slot>accept()</slot>
    <hints>
@@ -107,7 +108,7 @@ QPushButton {
   </connection>
   <connection>
    <sender>buttonBox</sender>
-   <Signal>rejected()</Signal>
+   <signal>rejected()</signal>
    <receiver>Dialog</receiver>
    <slot>reject()</slot>
    <hints>

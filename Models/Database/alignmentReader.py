@@ -1,8 +1,7 @@
-from typing import List
 from Models.Database.alignmentDbReader import *
+from Models.alignment import Alignment
 from Models.scoring import Scoring
 from Models.sequence import Sequence
-from Models.alignment import Alignment
 
 
 class AlignmentReader:
