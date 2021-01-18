@@ -12,8 +12,6 @@ class MainWindow(QMainWindow):
     fetch_seq_clicked = Signal()
     seq_selected = Signal(int, str)
     process_double_clicked = Signal(int)
-    window_minimized = Signal()
-    window_closed = Signal()
     drag_and_drop_accepted = Signal(QMimeData)
 
     __BLINK_DURATION = 500
@@ -36,17 +34,10 @@ class MainWindow(QMainWindow):
         self._ledBlinking = {1: False, 2: False, 3: False}
         QTimer.singleShot(50, lambda: self.setDefaultIcons())
 
-    def changeEvent(self, event: QEvent) -> None:
-        if self.windowState() == Qt.WindowMinimized:
-            self.window_minimized.emit()
-
     def show(self) -> None:
         super().show()
         if self.parent() is not None and self.parent() is not ...:
             self.parent().show()
-
-    def closeEvent(self, event: QCloseEvent) -> None:
-        self.window_closed.emit()
 
     def addSequences(self, seqIds: List[str]):
         for id in seqIds:
@@ -65,7 +56,7 @@ class MainWindow(QMainWindow):
         self.ui.seqFromNetAction.triggered.connect(self.fetch_seq_clicked)
 
     def _setLedStyleSheet(self, led, style):
-        st = QPixmap()
+        st = ""
         if style == MainWindow.__OK_KEY:
             st = self.__LED_OK_STYLESHEET
         elif style == MainWindow.__WRONG_KEY:

@@ -102,8 +102,8 @@ class Controller(QObject):
         self.mainWindow.alignment_process_clicked.connect(self.createAlignmentProcess)
         self.mainWindow.fetch_seq_clicked.connect(self._fetchFromInternetClicked)
         self.mainWindow.seq_selected.connect(self._seqSelected)
-        self.mainWindow.window_minimized.connect(self._foldToSystemTray)
-        self.mainWindow.window_closed.connect(self._foldToSystemTray)
+        self.backgroundWidget.window_minimized.connect(self._foldToSystemTray)
+        self.backgroundWidget.window_closed.connect(self._foldToSystemTray)
         self.mainWindow.ui.seq1ListWidget.item_dropped.connect(self._dndHandler.parseDroppedItems)
         self.mainWindow.ui.seq1ListWidget.item_dragged.connect(self._dndHandler.exportDraggedItem)
         self.mainWindow.ui.seq1ListWidget.item_double_clicked.connect(self.seqManager.showSequence)
@@ -203,14 +203,14 @@ class Controller(QObject):
             dialog.exec_()
 
     def _foldToSystemTray(self):
-        self._sysTrayIcon.show()
         self._internetConnectionChecker.stopChecking()
         self.backgroundWidget.hide()
         self.mainWindow.hide()
 
     def _restoreFromSystemTray(self):
         self.mainWindow.show()
-        self.backgroundWidget.show()
+        self.backgroundWidget.showNormal()
+        self.backgroundWidget.activateWindow()
         self._internetConnectionChecker.startChecking()
 
     def _closeResourcesAndQuit(self):

@@ -20,6 +20,9 @@ class MyOpenGLWidget(QOpenGLWidget, QOpenGLFunctions):
     CAMERA_FAR_CLIP = 2000.0
     ANIMATION_MILISECONDS_INTERVAL = 20.0
 
+    window_minimized = Signal()
+    window_closed = Signal()
+
     def __init__(self, parent=None):
         QOpenGLWidget.__init__(self, parent)
         QOpenGLFunctions.__init__(self)
@@ -119,6 +122,13 @@ class MyOpenGLWidget(QOpenGLWidget, QOpenGLFunctions):
         if self._animationStarted:
             self._hiddenWhileAnimating = True
             self.stopAnimation()
+
+    def changeEvent(self, event: QEvent) -> None:
+        if self.windowState() == Qt.WindowMinimized:
+            self.window_minimized.emit()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        self.window_closed.emit()
 
     def rotateCamera(self, pos):
         dy = (pos.y() - self.lastYRot) / 2.0
