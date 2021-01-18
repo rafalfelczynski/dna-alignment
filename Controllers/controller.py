@@ -1,6 +1,4 @@
-from PySide2.QtGui import QIcon
 from PySide2.QtNetwork import QNetworkAccessManager
-from PySide2.QtWidgets import *
 
 from Controllers.alignmentDndHandler import AlignmentDndHandler
 from Controllers.dndHandler import DragAndDropHandler
@@ -9,22 +7,24 @@ from Controllers.processController import ProcessController
 from Controllers.resultsController import ResultsController
 from Controllers.seqDialogController import SeqDialogController
 from Controllers.sequenceDragAndDropHandler import SequenceDragAndDropHandler
-from Models.Database.alignmentReader import AlignmentReader
 from Models.Database.databaseCreator import DatabaseCreator
 from Models.Database.dbconnection import DBConnection
-from Models.Database.dotplotReader import DotplotReader
-from Models.Database.seqDbUpdater import SeqDbUpdater
-from Models.Database.seqDbWriter import SeqDBWriter
-from Models.Database.seqReader import SeqDBReader
-from Models.Database.alignmentDbDeleter import AlignmentDbDeleter
-from Models.Database.dotplotDbDeleter import DotplotDbDeleter
-from Models.fileFastaReader import *
+from Models.Database.sequenceDbProvider import SequenceDbProvider
+from Models.Database.sequenceRepository import SequenceRepository
+from Models.Database.dotplotDbProvider import DotplotDbProvider
+from Models.Database.dotplotRepository import DotplotRepository
+from Models.Database.alignmentDbProvider import AlignmentDbProvider
+from Models.Database.alignmentRepository import AlignmentRepository
 from Models.scoring import Scoring
 from Models.sequenceManager import SeqManager
 from Views.autoPosMenu import AutoPosMenu
 from Views.infoDialog import InfoDialog
 from Views.mainwindow import MainWindow
 from Views.resultsWidget import ResultsWidget
+from Views.openglwidget import *
+from Models.objLoader import *
+
+import resources.res
 
 
 def isFloat(num):
@@ -41,40 +41,53 @@ class Controller(QObject):
     finished = Signal()
 
     __SYSTEM_TRAY_ICON = ":/dna_icon.png"
+    objfile = ":/helix.obj"
 
     def __init__(self):
         super().__init__()
+        self.backgroundWidget = MyOpenGLWidget()
+        lay = QGridLayout()
+        lay.setContentsMargins(0, 0, 0, 0)
+        self.backgroundWidget.setLayout(lay)
+        objloader = ObjLoader()
+        obj3d = objloader.loadObj(self.objfile)
+        self.backgroundWidget.setObject3D(obj3d)
+        self.backgroundWidget.startAnimation(45)
         self._dbConnection = DBConnection()
         DatabaseCreator.createDatabase(self._dbConnection)
-        self._dotplotReader = DotplotReader(self._dbConnection)
-        self._alignReader = AlignmentReader(self._dbConnection)
-        self._alignDeleter = AlignmentDbDeleter(self._dbConnection)
-        self._dotpDeleter = DotplotDbDeleter(self._dbConnection)
-        self.seqDbReader = SeqDBReader(self._dbConnection)
-        self.seqDbWriter = SeqDBWriter(self._dbConnection)
-        self.mainWindow = MainWindow()
+        self._dotpProvider = DotplotDbProvider(self._dbConnection)
+        self._alignProvider = AlignmentDbProvider(self._dbConnection)
+        self._seqProvider = SequenceDbProvider(self._dbConnection)
+        self.mainWindow = MainWindow(self.backgroundWidget)
+        lay.addWidget(self.mainWindow)
+        self.mainWindow.setWindowFlag(Qt.Window, False)
         self.parentDummy = QWidget()
         self._centralWidgetMemory = ...
         self.resultsWidget = ResultsWidget()
-        self.resultsController = ResultsController(self.resultsWidget, self._dotplotReader, self._alignReader,
-                                                   self._dotpDeleter, self._alignDeleter,
-                                                   AlignmentDndHandler(self._alignReader))
+        self.resultsController = ResultsController(self.resultsWidget,
+                                                   DotplotRepository(self._dotpProvider),
+                                                   AlignmentRepository(self._alignProvider),
+                                                   AlignmentDndHandler(AlignmentRepository(self._alignProvider)))
         self.resultsController.screenshot_saved.connect(self._displaySystemTrayMessage)
         self.operationWidget = self.mainWindow.centralWidget()
         self._networkManager = QNetworkAccessManager()
         self._internetConnectionChecker = InternetConnectionChecker(self._networkManager)
         self._internetConnectionChecker.setConnectionGraphicsView(self.mainWindow.ui.internetConnLbl)
         self._internetConnectionChecker.startChecking()
-        self.procContr: ProcessController = ProcessController(self.mainWindow.ui.activeProcTableWidget, self._dotplotReader, self._alignReader)
+        self.procContr: ProcessController = ProcessController(self.mainWindow.ui.activeProcTableWidget,
+                                                              DotplotRepository(self._dotpProvider),
+                                                              AlignmentRepository(self._alignProvider))
         self.procContr.process_created.connect(self._releaseSelectedData)
         self.procContr.process_finished.connect(self._processFinished)
-        self.seqManager = SeqManager(self._networkManager, self.seqDbReader, self.seqDbWriter, SeqDbUpdater(self._dbConnection))
+        self.seqManager = SeqManager(self._networkManager, SequenceRepository(self._seqProvider))
         self.dialogContr = SeqDialogController(self.seqManager)
-        self._dndHandler: DragAndDropHandler = SequenceDragAndDropHandler(self.mainWindow, self.seqDbReader, self.seqDbWriter)
+        self._dndHandler: DragAndDropHandler = SequenceDragAndDropHandler(self.mainWindow,
+                                                                          SequenceRepository(self._seqProvider))
         self.connectMainWindow()
         self.connectSeqManager()
         self._loadSequences()
-        self.mainWindow.show()
+        self.backgroundWidget.resize(self.mainWindow.size())
+        self.backgroundWidget.show()
         self._selectedScoring: Scoring = None
         self._selectedFirstSeq: str = None
         self._selectedSecSeq: str = None
@@ -192,17 +205,18 @@ class Controller(QObject):
     def _foldToSystemTray(self):
         self._sysTrayIcon.show()
         self._internetConnectionChecker.stopChecking()
+        self.backgroundWidget.hide()
         self.mainWindow.hide()
 
     def _restoreFromSystemTray(self):
         self.mainWindow.show()
+        self.backgroundWidget.show()
         self._internetConnectionChecker.startChecking()
 
     def _closeResourcesAndQuit(self):
         self._dbConnection.close()
         self.procContr.killAll()
         self.finished.emit()
-
 
     def _resultsViewClicked(self):
         if self.resultsWidget != self.mainWindow.centralWidget():
@@ -215,8 +229,8 @@ class Controller(QObject):
             self.mainWindow.setCentralWidget(self.operationWidget)
 
     def _processFinished(self, id):
-        if self.mainWindow.isMinimized():
-            self._displaySystemTrayMessage("Process finished", "One of your tasks have just finished processing")
+        if self.backgroundWidget.isHidden():
+            self._displaySystemTrayMessage("Process finished", "One of your tasks has just finished processing")
 
     def _showHelpInfoDialog(self):
         msg = "This application allows you to create a Dotplot and an Alignment from any 2 of the DNA sequences.\n" \
@@ -250,7 +264,7 @@ class Controller(QObject):
               'By pressing the SPACE on your keyboard, you can make a snapshot of' \
               ' currently selected fragment of the chart to analyze it later.\n' \
               'Images are stored in the directory: <user>/Documents/alignment/' \
-              'Alignments can be copied from the Application onto your computer machine by simply selecting a row and' \
+              '\nAlignments can be copied from the Application onto your computer machine by simply selecting a row and' \
               ' dragging it onto yor system files. ' \
               'The generated file will also contain some simple analysis of the alignment.' \
               '\n\nContact to the author: Rafał Felczyński, 236809@student.pwr.edu.pl'

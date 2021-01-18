@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>889</width>
+    <width>1060</width>
     <height>472</height>
    </rect>
   </property>
@@ -22,11 +22,7 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
-	border-image: url(&quot;:/background.jpg&quot;);
-	background-repeat: no-repeat; 
-	background-position: center;
-}</string>
+   <string notr="true"/>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
@@ -883,7 +879,7 @@ QListView::item:selected:active {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>889</width>
+     <width>1060</width>
      <height>23</height>
     </rect>
    </property>

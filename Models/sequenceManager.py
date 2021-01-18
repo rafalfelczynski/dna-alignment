@@ -9,6 +9,7 @@ from Models.networkFastaFetcher import NetworkFastaFetcher
 from Models.sequence import Sequence
 from Views.confirmDialog import ConfirmDialog
 from Views.infoDialog import *
+from Models.Database.sequenceRepository import SequenceRepository
 
 
 class SeqManager(QObject):
@@ -18,23 +19,21 @@ class SeqManager(QObject):
     not_dna_sequence = Signal(str)
     seq_removed = Signal(str)
 
-    def __init__(self, networkManager: QNetworkAccessManager, seqReader: ISeqReader, seqWriter: ISeqWriter, seqUpdater: ISeqUpdater):
+    def __init__(self, networkManager: QNetworkAccessManager, seqRepo: SequenceRepository):
         super().__init__()
-        self._seqReader = seqReader
-        self._seqWriter = seqWriter
+        self._seqRepo = seqRepo
         self._networkManager = networkManager
         self._fastaFetcher = NetworkFastaFetcher(self._networkManager)
         self._fastaFetcher.error_occurred.connect(self._networkErrorOccurred)
         self._fastaFetcher.data_ready.connect(self._seqFetched)
         self.dialogs = dict()
-        self._seqUpdater = seqUpdater
 
     def getNewSeqFromNet(self, seqId):
         # Set new task for retrieving sequence from the internet
         self._fastaFetcher.fetchFasta(seqId)
 
     def showSequence(self, seqId):
-        sequence = self._seqReader.readSeq(seqId)
+        sequence = self._seqRepo.readSeq(seqId)
         if sequence.isNotEmpty():
             self.addDialogWithSequence(sequence)
 
@@ -48,7 +47,7 @@ class SeqManager(QObject):
         dialog.exec_()
 
     def _removeSequenceFromDb(self, seqId):
-        if self._seqUpdater.deleteSeq(seqId):
+        if self._seqRepo.deleteSeq(seqId):
             self.seq_removed.emit(seqId)
         else:
             dialog = InfoDialog()
@@ -60,7 +59,7 @@ class SeqManager(QObject):
         self.dialogs[dialog.identifier] = dialog
         dialog.finished.connect(lambda: self.removeDialogWithSequence(dialog.identifier))
         dialog.setText(f"Identifier:\n{sequence.identifier}\n"
-                       f"Comment:\n{sequence.comment if sequence.comment else 'Nothing'}\n\n"
+                       f"Comment:\n{sequence.comment if sequence.comment else '***No comment***'}\n\n"
                        f"Sequence:\n{sequence.cutSequenceIntoFragments(50)}")
         dialog.resize(600, 300)
         dialog.setWindowModality(Qt.NonModal)
@@ -71,7 +70,7 @@ class SeqManager(QObject):
             self.dialogs.pop(identifier)
 
     def getAllSeqs(self) -> List[Sequence]:
-        return self._seqReader.readAll()
+        return self._seqRepo.readAll()
 
     def _networkErrorOccurred(self, msg):
         dialog = InfoDialog()
@@ -94,7 +93,7 @@ class SeqManager(QObject):
 
     def addSeqToDatabase(self, sequence: Sequence):
         if sequence.isValid():
-            return self._seqWriter.writeSeq(sequence)
+            return self._seqRepo.writeSeq(sequence)
         else:
             return False
 

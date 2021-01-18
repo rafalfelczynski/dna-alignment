@@ -4,14 +4,14 @@ from PySide2.QtCore import Signal
 from Controllers.dndFileParser import DnDFileParser
 from Views.infoDialog import InfoDialog
 from Models.scoring import Scoring
-from Models.Database.alignmentReader import AlignmentReader
+from Models.Database.alignmentRepository import AlignmentRepository
 
 
 class AlignmentDndHandler(DragAndDropHandler):
 
-    def __init__(self, alignReader: AlignmentReader):
+    def __init__(self, alignRepo: AlignmentRepository):
         super().__init__()
-        self.alignReader = alignReader
+        self._alignRepo = alignRepo
         self.fileParser = DnDFileParser()
 
     def parseDroppedItems(self, draggedData: QMimeData):
@@ -20,7 +20,7 @@ class AlignmentDndHandler(DragAndDropHandler):
     def exportDraggedItem(self, item: str, sourceIdentifier: QObject):
         ids = item.split("$$$")
         scoring = Scoring(float(ids[2]), float(ids[3]), float(ids[4]))
-        align = self.alignReader.readAlignment(ids[0], ids[1], scoring)
+        align = self._alignRepo.readAlignment(ids[0], ids[1], scoring)
         if align.isValid():
             drag = QDrag(sourceIdentifier)
             mimeData = QMimeData()

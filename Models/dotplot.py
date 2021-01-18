@@ -36,9 +36,6 @@ class Dotplot:
         else:
             raise ValueError(self.__INVALID_SEQUENCE_ERROR_MSG)
 
-    def setDotplotMatrix(self, matrix: np.ndarray):
-        self._dotplot = matrix
-
     def matrixToString(self) -> str:
         np.set_printoptions(threshold=sys.maxsize)
         buffer = BytesIO()
@@ -48,17 +45,12 @@ class Dotplot:
     def matrixFromString(self, string: str, rows, columns):
         string = string.replace("\n", "")
         if len(string) != rows*columns:
-            print("len", len(string), rows*columns, rows, columns)
             raise ValueError("Rows, columns and string length don't match!")
         matrix = np.zeros(shape=(rows, columns), dtype=int)
         for i in range(0, rows):
             for j in range(0, columns):
                 matrix[i, j] = int(string[i*columns+j])
         self._dotplot = matrix
-
-    def mapToXY(self):
-        rows, cols = self.dotplot.nonzero()
-        return cols.tolist(), rows.tolist()
 
     def __matchSequences(self):
         seq1String: str = self._seq1.sequence
@@ -70,6 +62,10 @@ class Dotplot:
             for j in range(0, columns):
                 matrix[i, j] = 1 if seq1String[i] == seq2String[j] else 0
         return matrix
+
+    def mapToXY(self):
+        rows, cols = self.dotplot.nonzero()
+        return cols.tolist(), rows.tolist()
 
 
 

@@ -1,8 +1,10 @@
 import sys
-
-from Models.Database.alignmentDbWriter import AlignmentDbWriter
+import PySide2
+from Models.Database.alignmentRepository import *
+from Models.Database.alignmentDbProvider import *
 from Models.Database.dbconnection import DBConnection
-from Models.Database.seqReader import SeqDBReader
+from Models.Database.sequenceRepository import *
+from Models.Database.sequenceDbProvider import *
 from Models.scoring import Scoring
 from Models.sequencesAligner import SequencesAligner
 
@@ -24,13 +26,13 @@ if __name__ == "__main__":
             gap = float(args[5])
             scoring = Scoring(match, mismatch, gap)
             dbConn = DBConnection()
-            seqDbReader = SeqDBReader(dbConn)
-            seq1 = seqDbReader.readSeq(idSeq1)
-            seq2 = seqDbReader.readSeq(idSeq2)
+            seqRepo = SequenceRepository(SequenceDbProvider(dbConn))
+            seq1 = seqRepo.readSeq(idSeq1)
+            seq2 = seqRepo.readSeq(idSeq2)
             if seq1.isNotEmpty() and seq2.isNotEmpty():
                 alignment = SequencesAligner.createAlignment(seq1, seq2, scoring)
-                alignDbWriter = AlignmentDbWriter(dbConn)
-                alignDbWriter.write(alignment)
+                alignDbWriter = AlignmentRepository(AlignmentDbProvider(dbConn))
+                alignDbWriter.writeAlignment(alignment)
         except Exception as e:
             with open("log2.txt", "w+", encoding="utf-8") as f:
                 [f.write(arg + "\n") for arg in splitArgs(sys.argv)]

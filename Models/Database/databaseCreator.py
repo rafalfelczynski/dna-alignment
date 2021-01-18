@@ -1,7 +1,7 @@
-from Models.Database.seqTableCreator import SequencesTableCreator
-from Models.Database.dotplotTableCreator import DotplotTableCreator
+from Models.Database.sequenceDbProvider import SequenceDbProvider
+from Models.Database.dotplotDbProvider import DotplotDbProvider
 from Models.Database.dbconnection import IDBConnection
-from Models.Database.alignmentTableCreator import AlignmentTableCreator
+from Models.Database.alignmentDbProvider import AlignmentDbProvider
 
 
 class DatabaseCreator:
@@ -14,11 +14,11 @@ class DatabaseCreator:
         conn.executeQuery(query)
         query = conn.createQuery("PRAGMA foreign_keys = ON;")
         conn.executeQuery(query)
-        seqTab = SequencesTableCreator(conn)
+        seqTab = SequenceDbProvider(conn)
         seqTab.createTable()
-        dotplotTab = DotplotTableCreator(conn)
+        dotplotTab = DotplotDbProvider(conn)
         dotplotTab.createTable()
-        alignmentTab = AlignmentTableCreator(conn)
+        alignmentTab = AlignmentDbProvider(conn)
         alignmentTab.createTable()
 
 

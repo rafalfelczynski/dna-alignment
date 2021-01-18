@@ -6,19 +6,14 @@ from QCustomPlot2 import *
 
 
 class DotplotChart(QCustomPlot):
-    pass
-
-
-class DotplotChart(QCustomPlot):
 
     __MARKER_SIZE = 3
     __BACKGROUND_COLOR: QColor = QColor(0, 0, 0, 255)
     widget_closed = pyqtSignal(tuple)
-    screenshot_requested = pyqtSignal(DotplotChart)
+    screenshot_requested = pyqtSignal(QCustomPlot)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.selfRef = self
         self.dotp = ...
         self.setAntialiasedElements(QCP.AntialiasedElement.aeAll)
         self.setBackground(QBrush(Qt.NoBrush))
@@ -31,7 +26,8 @@ class DotplotChart(QCustomPlot):
 
     def closeEvent(self, event: QCloseEvent):
         self.widget_closed.emit((self.dotp.seq1.identifier, self.dotp.seq2.identifier))
-        super().closeEvent(event)
+        self.clearItems()
+        self.clearGraphs()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key_Space:

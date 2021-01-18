@@ -25,8 +25,10 @@ class MainWindow(QMainWindow):
     __WRONG_KEY = "wrong"
     __LED_WRONG_STYLESHEET = ":/red_led.png"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlag(Qt.FramelessWindowHint)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("Alignment")
@@ -37,6 +39,11 @@ class MainWindow(QMainWindow):
     def changeEvent(self, event: QEvent) -> None:
         if self.windowState() == Qt.WindowMinimized:
             self.window_minimized.emit()
+
+    def show(self) -> None:
+        super().show()
+        if self.parent() is not None and self.parent() is not ...:
+            self.parent().show()
 
     def closeEvent(self, event: QCloseEvent) -> None:
         self.window_closed.emit()

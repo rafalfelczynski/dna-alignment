@@ -20,16 +20,12 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(889, 472)
+        MainWindow.resize(1060, 472)
         font = QFont()
         font.setPointSize(12)
         MainWindow.setFont(font)
         MainWindow.setFocusPolicy(Qt.NoFocus)
-        MainWindow.setStyleSheet(u"QMainWindow {\n"
-"	border-image: url(\":/background.jpg\");\n"
-"	background-repeat: no-repeat; \n"
-"	background-position: center;\n"
-"}")
+        MainWindow.setStyleSheet(u"")
         MainWindow.setLocale(QLocale(QLocale.English, QLocale.UnitedStates))
         self.helpAboutAction = QAction(MainWindow)
         self.helpAboutAction.setObjectName(u"helpAboutAction")
@@ -475,7 +471,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 889, 23))
+        self.menubar.setGeometry(QRect(0, 0, 1060, 23))
         sizePolicy7 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         sizePolicy7.setHorizontalStretch(0)
         sizePolicy7.setVerticalStretch(0)

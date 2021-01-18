@@ -3,8 +3,8 @@ from datetime import datetime
 import psutil
 from PySide2.QtCore import *
 
-from Models.Database.alignmentReader import AlignmentReader
-from Models.Database.dotplotReader import DotplotReader
+from Models.Database.alignmentRepository import AlignmentRepository
+from Models.Database.dotplotRepository import DotplotRepository
 from Models.alignmentProgram import ALIGNMENT_PROGRAM_PATH
 from Models.dotplotProgram import DOTPLOT_PROGRAM_PATH
 from Models.workerProcess import WorkerProcess
@@ -21,7 +21,7 @@ class ProcessController(QObject):
     __PROCESSES_POOL_SIZE = 4
     __TIMER_INTERVAL = 500
 
-    def __init__(self, processWidget, dotplotReader, alignmentReader):
+    def __init__(self, processWidget, dotpRepo: DotplotRepository, alignRepo: AlignmentRepository):
         super().__init__()
         self._processes = dict()
         self._nextProcIndex = 0
@@ -32,8 +32,8 @@ class ProcessController(QObject):
         self._getProcInfoTimer = QTimer()
         self._getProcInfoTimer.timeout.connect(self.getProcInfo)
         self._getProcInfoTimer.start(ProcessController.__TIMER_INTERVAL)
-        self._dotplotReader: DotplotReader = dotplotReader
-        self._alignReader: AlignmentReader = alignmentReader
+        self._dotpRepo = dotpRepo
+        self._alignRepo = alignRepo
 
     def createDotplotProcess(self, seq1Id, seq2Id):
         if not self.dotplotProcExists(seq1Id, seq2Id):
@@ -69,11 +69,11 @@ class ProcessController(QObject):
         return False
 
     def alignmentProcExists(self, selectedFirstSeq, selectedSecSeq, selectedScoring):
-        exists = self._alignReader.checkIfExists(selectedFirstSeq, selectedSecSeq, selectedScoring)
+        exists = self._alignRepo.checkIfExists(selectedFirstSeq, selectedSecSeq, selectedScoring)
         return exists or self._activeProcTableWidget.checkIfProcExists(selectedFirstSeq, selectedSecSeq, selectedScoring)
 
     def dotplotProcExists(self, selectedFirstSeq, selectedSecSeq):
-        exists = self._dotplotReader.checkIfExists(selectedFirstSeq, selectedSecSeq)
+        exists = self._dotpRepo.checkIfExists(selectedFirstSeq, selectedSecSeq)
         return exists or self._activeProcTableWidget.checkIfProcExists(selectedFirstSeq, selectedSecSeq, None)
 
     def executeProcess(self, id):

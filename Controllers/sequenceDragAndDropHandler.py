@@ -3,14 +3,15 @@ from PySide2.QtGui import *
 from Controllers.dndFileParser import DnDFileParser
 from Controllers.dndHandler import *
 from Views.infoDialog import InfoDialog
+from Models.Database.sequenceRepository import SequenceRepository
+
 
 class SequenceDragAndDropHandler(DragAndDropHandler):
 
-    def __init__(self, relatedWidget, seqDbReader, seqDbWriter):
+    def __init__(self, relatedWidget, seqRepo : SequenceRepository):
         super().__init__()
         self.relatedWidget = relatedWidget
-        self.seqDbReader = seqDbReader
-        self.seqDbWriter = seqDbWriter
+        self._seqRepo = seqRepo
         self.fileParser = DnDFileParser()
 
     def parseDroppedItems(self, draggedData: QMimeData):
@@ -18,7 +19,7 @@ class SequenceDragAndDropHandler(DragAndDropHandler):
         addedSequences = []
         rejectedSequences = []
         for seq in sequences:
-            wasAdded = self.seqDbWriter.writeSeq(seq)
+            wasAdded = self._seqRepo.writeSeq(seq)
             if wasAdded:
                 addedSequences.append(seq.identifier)
                 self.relatedWidget.newSeqAvailable(seq.identifier)
@@ -28,14 +29,13 @@ class SequenceDragAndDropHandler(DragAndDropHandler):
             self._showAccRejFilesAndSeqs(acceptedFiles, rejectedFiles, addedSequences, rejectedSequences)
 
     def exportDraggedItem(self, item: str, sourceIdentifier: QObject):
-        seq = self.seqDbReader.readSeq(item)
+        seq = self._seqRepo.readSeq(item)
         if seq.isNotEmpty():
             drag = QDrag(sourceIdentifier)
             mimeData = QMimeData()
             cwd = QDir.current()
             cwd.mkdir("temp")
             file = QFile(f"temp/{seq.identifier}.fasta")
-
             fileInfo = QFileInfo(file)
             file.open(QFile.WriteOnly)
             file.write(QByteArray(f">{seq.identifier} {seq.comment}\n{seq.cutSequenceIntoFragments(80)}".encode("utf-8")))
