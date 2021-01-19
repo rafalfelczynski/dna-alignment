@@ -26,8 +26,6 @@ class DotplotChart(QCustomPlot):
 
     def closeEvent(self, event: QCloseEvent):
         self.widget_closed.emit((self.dotp.seq1.identifier, self.dotp.seq2.identifier))
-        self.clearItems()
-        self.clearGraphs()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key_Space:
